@@ -4,7 +4,8 @@ A jetpack compose calculator clone of google calculator written with 100% Jetpac
 
 This calculator uses an implementation of the [ExprK](https://github.com/Keelar/ExprK) library to calculculate expression.
 
-![Screenshot of app](pictures/calculator_screenshot.jpg)
+<img src="pictures/calculator_screenshot.jpg" alt="Calculator Screenshot" width="300"/>
+
 ## Features
 - Jetpack Compose
 - Material 3
