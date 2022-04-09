@@ -1,15 +1,12 @@
 package com.infinitepower.calculator.compose.ui.components.button
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -32,6 +29,7 @@ import com.infinitepower.calculator.compose.ui.theme.spacing
 @OptIn(ExperimentalMaterial3Api::class)
 internal fun ButtonComponent(
     modifier: Modifier = Modifier,
+    buttonGridState: ButtonGridState = ButtonGridState.EXPANDED,
     buttonAction: ButtonAction,
     onClick: () -> Unit
 ) {
@@ -39,6 +37,7 @@ internal fun ButtonComponent(
 
     ButtonComponentImpl(
         modifier = modifier,
+        buttonGridState = buttonGridState,
         actionText = buttonAction.value,
         color = color,
         onClick = onClick
@@ -49,6 +48,7 @@ internal fun ButtonComponent(
 @ExperimentalMaterial3Api
 private fun ButtonComponentImpl(
     modifier: Modifier = Modifier,
+    buttonGridState: ButtonGridState,
     actionText: String,
     color: Color,
     onClick: () -> Unit
@@ -62,6 +62,10 @@ private fun ButtonComponentImpl(
         targetValue = if (surfacePressed) 20.dp else 100.dp,
         animationSpec = tween(durationMillis = 250, easing = LinearEasing)
     )
+
+    val textStyle = if (buttonGridState == ButtonGridState.EXPANDED) {
+        MaterialTheme.typography.headlineMedium
+    } else MaterialTheme.typography.titleMedium
 
     Surface(
         modifier = modifier,
@@ -77,7 +81,7 @@ private fun ButtonComponentImpl(
         ) {
             Text(
                 text = actionText,
-                style = MaterialTheme.typography.headlineMedium,
+                style = textStyle,
                 textAlign = TextAlign.Center,
             )
         }
@@ -90,13 +94,25 @@ private fun ButtonComponentImpl(
 private fun ButtonComponentPreview() {
     CalculatorTheme {
         Surface {
-            ButtonComponent(
-                modifier = Modifier
-                    .size(100.dp)
-                    .padding(MaterialTheme.spacing.medium),
-                buttonAction = ButtonAction.Button1,
-                onClick = {}
-            )
+            Column {
+                ButtonComponent(
+                    modifier = Modifier
+                        .size(100.dp)
+                        .padding(MaterialTheme.spacing.medium),
+                    buttonAction = ButtonAction.Button1,
+                    onClick = {}
+                )
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+                ButtonComponent(
+                    modifier = Modifier
+                        .width(100.dp)
+                        .aspectRatio(1f / 0.7f)
+                        .padding(MaterialTheme.spacing.medium),
+                    buttonAction = ButtonAction.Button1,
+                    buttonGridState = ButtonGridState.COLLAPSED,
+                    onClick = {}
+                )
+            }
         }
     }
 }
