@@ -1,4 +1,4 @@
-package com.infinitepower.calculator.compose.ui.components.button
+package com.infinitepower.calculator.compose.ui.components.button.secondary
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction.Companion.getColorByButton
 import com.infinitepower.calculator.compose.ui.theme.CalculatorTheme
 import com.infinitepower.calculator.compose.ui.theme.spacing
@@ -54,7 +55,6 @@ private fun SecondaryButtonComponentImpl(
     ) {
         Box(
             contentAlignment = Alignment.Center,
-            modifier = Modifier.padding(MaterialTheme.spacing.medium)
         ) {
             Text(
                 text = actionText,

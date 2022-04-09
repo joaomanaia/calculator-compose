@@ -27,12 +27,12 @@ sealed class ButtonAction(
         @Composable
         @ReadOnlyComposable
         fun ButtonAction.getColorByButton(): Color = when (this) {
-            is Button0, Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, ButtonDot, ButtonRemove -> colorSurface
+            is Button0, Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, ButtonDot, ButtonRemove, ButtonSquareRoot, ButtonPI, ButtonPower, ButtonFactorial, ButtonSin, ButtonCos, ButtonTan, ButtonLog, ButtonLn, ButtonExp, -> colorSurface
             is ButtonParentheses, ButtonPercent, ButtonDivide, ButtonMultiply, ButtonMinus, ButtonPlus, ButtonEqual -> colorPrimary
             is ButtonClear -> colorTertiary
         }
 
-        fun getAllButtons(): List<ButtonAction> = listOf(
+        fun getAllPrimaryButtons(): List<ButtonAction> = listOf(
             ButtonClear,
             ButtonParentheses,
             ButtonPercent,
@@ -53,6 +53,16 @@ sealed class ButtonAction(
             ButtonDot,
             ButtonRemove,
             ButtonEqual
+        )
+
+        fun getAllSecondaryButtons(): List<ButtonAction> = listOf(
+            ButtonSquareRoot,
+            ButtonPI,
+            ButtonPower,
+            ButtonFactorial,
+            ButtonLog,
+            ButtonLn,
+            ButtonExp,
         )
     }
 
@@ -78,4 +88,15 @@ sealed class ButtonAction(
     object ButtonClear : ButtonAction(value = "AC")
     object ButtonRemove : ButtonAction(value = "←")
     object ButtonParentheses : ButtonAction(value = "( )")
+
+    object ButtonSquareRoot : ButtonAction(value = "√")
+    object ButtonPI : ButtonAction(value = "π")
+    object ButtonPower : ButtonAction(value = "^")
+    object ButtonFactorial : ButtonAction(value = "!")
+    object ButtonSin : ButtonAction(value = "sin")
+    object ButtonCos : ButtonAction(value = "cos")
+    object ButtonTan : ButtonAction(value = "tan")
+    object ButtonLog : ButtonAction(value = "log")
+    object ButtonLn : ButtonAction(value = "ln")
+    object ButtonExp : ButtonAction(value = "e")
 }

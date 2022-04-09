@@ -126,7 +126,19 @@ internal class Parser(private val tokens: List<Token>) {
             return UnaryExpr(operator, right)
         }
 
-        return exponent()
+        return factorial()
+    }
+
+    private fun factorial(): Expr {
+        val left = exponent()
+
+        if (match(FACTORIAL)) {
+            val operator = previous()
+
+            return LeftExpr(operator, left)
+        }
+
+        return left
     }
 
     private fun exponent(): Expr {
@@ -232,5 +244,4 @@ internal class Parser(private val tokens: List<Token>) {
     private fun previous() = tokens[current - 1]
 
     private fun previousTwo() = Pair(tokens[current - 2], tokens[current - 1])
-
 }

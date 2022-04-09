@@ -7,6 +7,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -50,7 +51,6 @@ fun ExpressionContent(
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start
             )
-            Spacer(modifier = Modifier.height(spaceMedium))
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(
@@ -80,15 +80,17 @@ fun ExpressionContent(
                     )
                 )
             }
-            Spacer(modifier = Modifier.height(spaceMedium))
-            Text(
-                text = result,
-                style = MaterialTheme.typography.displaySmall,
-                modifier = Modifier.fillMaxWidth(),
-                textAlign = TextAlign.End,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
+            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+            SelectionContainer {
+                Text(
+                    text = result,
+                    style = MaterialTheme.typography.displaySmall,
+                    modifier = Modifier.fillMaxWidth(),
+                    textAlign = TextAlign.End,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
         }
     }
 }

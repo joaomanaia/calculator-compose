@@ -7,6 +7,10 @@
         <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/components/FlashingLineComponent.kt" value="2.0" />
         <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/components/button/ButtonComponent.kt" value="0.649090909090909" />
         <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/components/button/ButtonGrid.kt" value="0.31165540540540543" />
+        <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/components/button/SecondaryButtonComponent.kt" value="2.0" />
+        <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/components/button/primary/ButtonGrid.kt" value="0.1540551839464883" />
+        <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/components/button/secondary/SecondaryButtonComponent.kt" value="0.31139240506329113" />
+        <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/components/button/secondary/SecondaryGrid.kt" value="0.33" />
         <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/components/expression_content/ExpressionContent.kt" value="0.31139240506329113" />
         <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/home/HomeScreen.kt" value="0.31165540540540543" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1" />

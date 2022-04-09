@@ -5,6 +5,9 @@ import com.infinitepower.calculator.compose.core.evaluator.internal.Function
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
+import kotlin.math.log
+import kotlin.math.log10
+import kotlin.math.sqrt
 
 class ExpressionException(message: String) : RuntimeException(message)
 
@@ -12,88 +15,33 @@ class Expressions {
     private val evaluator = Evaluator()
 
     init {
-        define("pi", Math.PI)
+        define("π", Math.PI)
         define("e", Math.E)
 
-        evaluator.addFunction("abs", object : Function() {
+        evaluator.addFunction("ln", object : Function() {
             override fun call(arguments: List<BigDecimal>): BigDecimal {
-                if (arguments.size != 1) throw ExpressionException(
-                    "abs requires one argument")
+                if (arguments.size != 1)
+                    throw ExpressionException("ln requires one argument")
 
-                return arguments.first().abs()
+                return log(arguments.first().toDouble(), Math.E).toBigDecimal()
             }
         })
 
-        evaluator.addFunction("sum", object : Function() {
+        evaluator.addFunction("log", object : Function() {
             override fun call(arguments: List<BigDecimal>): BigDecimal {
-                if (arguments.isEmpty()) throw ExpressionException(
-                    "sum requires at least one argument")
+                if (arguments.size != 1)
+                    throw ExpressionException("log requires one argument")
 
-                return arguments.reduce { sum, bigDecimal ->
-                    sum.add(bigDecimal)
-                }
+                return log10(arguments.first().toDouble()).toBigDecimal()
             }
         })
 
-        evaluator.addFunction("floor", object : Function() {
+        evaluator.addFunction("√", object : Function() {
             override fun call(arguments: List<BigDecimal>): BigDecimal {
-                if (arguments.size != 1) throw ExpressionException(
-                    "abs requires one argument")
+                if (arguments.size != 1)
+                    throw ExpressionException("square root requires one argument")
 
-                return arguments.first().setScale(0, RoundingMode.FLOOR)
-            }
-        })
-
-        evaluator.addFunction("ceil", object : Function() {
-            override fun call(arguments: List<BigDecimal>): BigDecimal {
-                if (arguments.size != 1) throw ExpressionException(
-                    "abs requires one argument")
-
-                return arguments.first().setScale(0, RoundingMode.CEILING)
-            }
-        })
-
-        evaluator.addFunction("round", object : Function() {
-            override fun call(arguments: List<BigDecimal>): BigDecimal {
-                if (arguments.size !in listOf(1, 2)) throw ExpressionException(
-                    "round requires either one or two arguments")
-
-                val value = arguments.first()
-                val scale = if (arguments.size == 2) arguments.last().toInt() else 0
-
-                return value.setScale(scale, roundingMode)
-            }
-        })
-
-        evaluator.addFunction("min", object : Function() {
-            override fun call(arguments: List<BigDecimal>): BigDecimal {
-                if (arguments.isEmpty()) throw ExpressionException(
-                    "min requires at least one argument")
-
-                return arguments.minOrNull()!!
-            }
-        })
-
-        evaluator.addFunction("max", object : Function() {
-            override fun call(arguments: List<BigDecimal>): BigDecimal {
-                if (arguments.isEmpty()) throw ExpressionException(
-                    "max requires at least one argument")
-
-                return arguments.maxOrNull()!!
-            }
-        })
-
-        evaluator.addFunction("if", object : Function() {
-            override fun call(arguments: List<BigDecimal>): BigDecimal {
-                val condition = arguments[0]
-                val thenValue = arguments[1]
-                val elseValue = arguments[2]
-
-                return if (condition != BigDecimal.ZERO) {
-                    thenValue
-                } else {
-                    elseValue
-                }
+                return sqrt(arguments.first().toDouble()).toBigDecimal()
             }
         })
     }

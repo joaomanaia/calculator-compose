@@ -68,10 +68,11 @@ internal class Evaluator : ExprVisitor<BigDecimal> {
             GREATER_EQUAL -> (left >= right).toBigDecimal()
             LESS -> (left < right).toBigDecimal()
             LESS_EQUAL -> (left <= right).toBigDecimal()
-            else -> throw ExpressionException(
-                "Invalid binary operator '${expr.operator.lexeme}'")
+            else -> throw ExpressionException("Invalid binary operator '${expr.operator.lexeme}'")
         }
     }
+
+    private fun Int.factorial() = (2..this).fold(1, Int::times)
 
     override fun visitUnaryExpr(expr: UnaryExpr): BigDecimal {
         val right = eval(expr.right)
@@ -81,6 +82,15 @@ internal class Evaluator : ExprVisitor<BigDecimal> {
                 right.negate()
             }
             else -> throw ExpressionException("Invalid unary operator")
+        }
+    }
+
+    override fun visitLeftExpr(expr: LeftExpr): BigDecimal {
+        val left = eval(expr.left)
+
+        return when (expr.operator.type) {
+            FACTORIAL -> left.intValueExact().factorial().toBigDecimal()
+            else -> throw ExpressionException("Invalid left operator")
         }
     }
 

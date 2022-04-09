@@ -26,12 +26,13 @@ class HomeViewModel @Inject constructor(
         when (event) {
             is HomeUiEvent.OnButtonActionClick -> processAction(event.action)
             is HomeUiEvent.UpdateTextFieldValue -> updateTextFieldValue(event.value)
+            is HomeUiEvent.OnChangeMoreActionsState -> changeMoreActionsState(event.expanded)
         }
     }
 
     private suspend fun processAction(action: ButtonAction) {
         when (action) {
-            is Button0, Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, ButtonDot, ButtonPercent, ButtonDivide, ButtonMultiply, ButtonMinus, ButtonPlus -> addActionValueToExpression(action)
+            is Button0, Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, ButtonDot, ButtonPercent, ButtonDivide, ButtonMultiply, ButtonMinus, ButtonPlus, ButtonSquareRoot, ButtonPI, ButtonPower, ButtonFactorial, ButtonSin, ButtonCos, ButtonTan, ButtonLog, ButtonLn, ButtonExp -> addActionValueToExpression(action)
             is ButtonEqual -> addResultToExpression()
             is ButtonClear -> clearExpression()
             is ButtonParentheses -> addParentheses()
@@ -43,7 +44,10 @@ class HomeViewModel @Inject constructor(
         action: ButtonAction
     ) {
         val currentExpression = uiState.first().currentExpression
-        val newCursorPosition = currentExpression.selection.start + 1
+        val newCursorPosition = when (action) {
+            is ButtonLog, ButtonLn, ButtonSquareRoot -> currentExpression.selection.start + action.value.length + 1
+            else -> currentExpression.selection.start + action.value.length
+        }
 
         val newExpression = expressionUtil.addActionValueToExpression(action, currentExpression)
         calculateExpression(
@@ -114,5 +118,13 @@ class HomeViewModel @Inject constructor(
     ) {
         val result = expressionUtil.calculateExpression(value.text)
         updateUiState(value, result)
+    }
+
+    private suspend fun changeMoreActionsState(
+        expanded: Boolean
+    ) {
+        _uiState.emit(
+            uiState.first().copy(moreActionsExpanded = expanded)
+        )
     }
 }

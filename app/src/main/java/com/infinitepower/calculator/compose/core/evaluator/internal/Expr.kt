@@ -44,6 +44,15 @@ internal class UnaryExpr(
     }
 }
 
+internal class LeftExpr(
+    val operator: Token,
+    val left: Expr
+) : Expr() {
+    override fun <R> accept(visitor: ExprVisitor<R>): R {
+        return visitor.visitLeftExpr(this)
+    }
+}
+
 internal class CallExpr(
     val name: String,
     val arguments: List<Expr>
@@ -79,6 +88,8 @@ internal interface ExprVisitor<out R> {
     fun visitBinaryExpr(expr: BinaryExpr): R
 
     fun visitUnaryExpr(expr: UnaryExpr): R
+
+    fun visitLeftExpr(expr: LeftExpr): R
 
     fun visitCallExpr(expr: CallExpr): R
 

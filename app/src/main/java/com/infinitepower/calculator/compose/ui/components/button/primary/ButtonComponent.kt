@@ -1,4 +1,4 @@
-package com.infinitepower.calculator.compose.ui.components.button
+package com.infinitepower.calculator.compose.ui.components.button.primary
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.core.LinearEasing
@@ -21,6 +21,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction.Companion.getColorByButton
 import com.infinitepower.calculator.compose.ui.theme.CalculatorTheme
 import com.infinitepower.calculator.compose.ui.theme.spacing
@@ -29,7 +30,7 @@ import com.infinitepower.calculator.compose.ui.theme.spacing
 @OptIn(ExperimentalMaterial3Api::class)
 internal fun ButtonComponent(
     modifier: Modifier = Modifier,
-    buttonGridState: ButtonGridState = ButtonGridState.EXPANDED,
+    buttonGridExpanded: Boolean = true,
     buttonAction: ButtonAction,
     onClick: () -> Unit
 ) {
@@ -37,7 +38,7 @@ internal fun ButtonComponent(
 
     ButtonComponentImpl(
         modifier = modifier,
-        buttonGridState = buttonGridState,
+        buttonGridExpanded = buttonGridExpanded,
         actionText = buttonAction.value,
         color = color,
         onClick = onClick
@@ -48,7 +49,7 @@ internal fun ButtonComponent(
 @ExperimentalMaterial3Api
 private fun ButtonComponentImpl(
     modifier: Modifier = Modifier,
-    buttonGridState: ButtonGridState,
+    buttonGridExpanded: Boolean,
     actionText: String,
     color: Color,
     onClick: () -> Unit
@@ -63,7 +64,7 @@ private fun ButtonComponentImpl(
         animationSpec = tween(durationMillis = 250, easing = LinearEasing)
     )
 
-    val textStyle = if (buttonGridState == ButtonGridState.EXPANDED) {
+    val textStyle = if (buttonGridExpanded) {
         MaterialTheme.typography.headlineMedium
     } else MaterialTheme.typography.titleMedium
 
@@ -109,7 +110,7 @@ private fun ButtonComponentPreview() {
                         .aspectRatio(1f / 0.7f)
                         .padding(MaterialTheme.spacing.medium),
                     buttonAction = ButtonAction.Button1,
-                    buttonGridState = ButtonGridState.COLLAPSED,
+                    buttonGridExpanded = false,
                     onClick = {}
                 )
             }

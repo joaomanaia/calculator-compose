@@ -41,7 +41,7 @@ internal class Scanner(
             '%' -> addToken(MODULO)
             '^' -> addToken(EXPONENT)
             '=' -> if (match('=')) addToken(EQUAL_EQUAL) else addToken(ASSIGN)
-            '!' -> if (match('=')) addToken(NOT_EQUAL) else invalidToken(c)
+            '!' -> if (match('=')) addToken(NOT_EQUAL) else addToken(FACTORIAL)
             '>' -> if (match('=')) addToken(GREATER_EQUAL) else addToken(GREATER)
             '<' -> if (match('=')) addToken(LESS_EQUAL) else addToken(LESS)
             '|' -> if (match('|')) addToken(BAR_BAR) else invalidToken(c)
@@ -52,7 +52,7 @@ internal class Scanner(
             else -> {
                 when {
                     c.isDigit() -> number()
-                    c.isAlpha() -> identifier()
+                    c.isAlpha() || c.isOtherIdentifiers() -> identifier()
                     else -> invalidToken(c)
                 }
             }
@@ -122,11 +122,15 @@ internal class Scanner(
         tokens.add(Token(type, text, literal))
     }
 
-    private fun Char.isAlphaNumeric() = isAlpha() || isDigit()
+    private fun Char.isAlphaNumeric() = isAlpha() || isDigit() || isOtherIdentifiers()
 
     private fun Char.isAlpha() = this in 'a'..'z'
             || this in 'A'..'Z'
             || this == '_'
+
+    private fun Char.isOtherIdentifiers() = this == 'π'
+            || this == '√'
+            || this == '!'
 
     private fun Char.isDigit() = this == '.' || this in '0'..'9'
 

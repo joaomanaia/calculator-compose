@@ -1,17 +1,15 @@
 package com.infinitepower.calculator.compose.ui.home
 
-import android.util.Log
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.Surface
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.infinitepower.calculator.compose.ui.components.button.ButtonGrid
+import com.infinitepower.calculator.compose.ui.components.button.primary.ButtonGrid
+import com.infinitepower.calculator.compose.ui.components.button.secondary.SecondaryButtonGrid
 import com.infinitepower.calculator.compose.ui.components.expression_content.ExpressionContent
 import com.infinitepower.calculator.compose.ui.theme.CalculatorTheme
 
@@ -42,11 +40,22 @@ fun HomeScreenImpl(
                     onEvent(HomeUiEvent.UpdateTextFieldValue(value))
                 }
             )
+            SecondaryButtonGrid(
+                modifier = Modifier.fillMaxWidth(),
+                onActionClick = { action ->
+                    onEvent(HomeUiEvent.OnButtonActionClick(action))
+                },
+                onMoreActionsClick = { expanded ->
+                    onEvent(HomeUiEvent.OnChangeMoreActionsState(expanded))
+                },
+                buttonGridExpanded = uiState.moreActionsExpanded
+            )
             ButtonGrid(
                 modifier = Modifier.fillMaxWidth(),
                 onActionClick = { action ->
                     onEvent(HomeUiEvent.OnButtonActionClick(action))
-                }
+                },
+                buttonGridExpanded = !uiState.moreActionsExpanded
             )
         }
     }

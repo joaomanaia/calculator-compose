@@ -1,2 +1,155 @@
 package com.infinitepower.calculator.compose.ui.components.button.secondary
 
+import android.content.res.Configuration
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ArrowDropDown
+import androidx.compose.material.icons.rounded.ArrowDropUp
+import androidx.compose.material3.*
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
+import com.infinitepower.calculator.compose.ui.theme.CalculatorTheme
+import com.infinitepower.calculator.compose.ui.theme.spacing
+
+@Composable
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+internal fun SecondaryButtonGrid(
+    modifier: Modifier = Modifier,
+    buttonGridExpanded: Boolean,
+    onActionClick: (action: ButtonAction) -> Unit,
+    onMoreActionsClick: (expanded: Boolean) -> Unit
+) {
+    val actions = ButtonAction.getAllSecondaryButtons()
+
+    SecondaryButtonGridImpl(
+        modifier = modifier,
+        actions = actions,
+        buttonGridExpanded = buttonGridExpanded,
+        onActionClick = onActionClick,
+        onMoreActionsClick = onMoreActionsClick
+    )
+}
+
+@Composable
+@ExperimentalMaterial3Api
+@ExperimentalFoundationApi
+private fun SecondaryButtonGridImpl(
+    modifier: Modifier = Modifier,
+    actions: List<ButtonAction>,
+    buttonGridExpanded: Boolean,
+    onActionClick: (action: ButtonAction) -> Unit,
+    onMoreActionsClick: (expanded: Boolean) -> Unit
+) {
+    val spaceSmall = MaterialTheme.spacing.small
+    val spaceMedium = MaterialTheme.spacing.medium
+
+    val gridActions = if (buttonGridExpanded) actions else actions.take(4)
+
+    Row(
+        verticalAlignment = Alignment.Top,
+        modifier = Modifier.padding(end = spaceMedium)
+    ) {
+        LazyVerticalGrid(
+            modifier = modifier.weight(1f),
+            cells = GridCells.Fixed(count = 4),
+            verticalArrangement = Arrangement.spacedBy(spaceSmall),
+            horizontalArrangement = Arrangement.spacedBy(spaceSmall),
+            contentPadding = PaddingValues(
+                horizontal = spaceMedium,
+                vertical = spaceSmall
+            )
+        ) {
+            items(items = gridActions) { action ->
+                SecondaryButtonComponent(
+                    buttonAction = action,
+                    modifier = Modifier.fillParentMaxWidth(),
+                    onClick = { onActionClick(action) }
+                )
+            }
+        }
+        MoreSecondaryActionsItem(
+            modifier = Modifier.padding(top = spaceSmall),
+            buttonGridExpanded = buttonGridExpanded,
+            onClick = {
+                onMoreActionsClick(!buttonGridExpanded)
+            }
+        )
+    }
+}
+
+@Composable
+@ExperimentalMaterial3Api
+private fun MoreSecondaryActionsItem(
+    modifier: Modifier = Modifier,
+    buttonGridExpanded: Boolean,
+    onClick: () -> Unit
+) {
+    Surface(
+        modifier = modifier,
+        shape = CircleShape,
+        tonalElevation = 8.dp,
+        onClick = onClick
+    ) {
+        Icon(
+            imageVector = if (buttonGridExpanded) Icons.Rounded.ArrowDropUp else Icons.Rounded.ArrowDropDown,
+            contentDescription = "More Actions",
+            modifier = Modifier.padding(MaterialTheme.spacing.extraSmall)
+        )
+    }
+}
+
+@Composable
+@Preview(
+    showBackground = true,
+    group = "Button Grid"
+)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    group = "Button Grid"
+)
+private fun ButtonGridPreview() {
+    CalculatorTheme {
+        Surface {
+            SecondaryButtonGrid(
+                modifier = Modifier.fillMaxWidth(),
+                buttonGridExpanded = true,
+                onActionClick = {},
+                onMoreActionsClick = {}
+            )
+        }
+    }
+}
+
+@Composable
+@Preview(
+    showBackground = true,
+    group = "More Secondary Actions Item"
+)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    group = "More Secondary Actions Item"
+)
+@OptIn(ExperimentalMaterial3Api::class)
+private fun MoreSecondaryActionsItemPreview() {
+    CalculatorTheme {
+        Surface {
+            MoreSecondaryActionsItem(
+                onClick = {},
+                buttonGridExpanded = false
+            )
+        }
+    }
+}

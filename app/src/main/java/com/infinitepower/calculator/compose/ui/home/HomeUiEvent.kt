@@ -11,4 +11,8 @@ sealed class HomeUiEvent {
     data class UpdateTextFieldValue(
         val value: TextFieldValue
     ) : HomeUiEvent()
+
+    data class OnChangeMoreActionsState(
+        val expanded: Boolean
+    ) : HomeUiEvent()
 }

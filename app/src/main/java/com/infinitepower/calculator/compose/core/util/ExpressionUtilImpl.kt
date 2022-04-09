@@ -4,6 +4,7 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import com.infinitepower.calculator.compose.core.evaluator.Expressions
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
+import com.infinitepower.calculator.compose.ui.components.button.ButtonAction.*
 
 class ExpressionUtilImpl(
     private val expressions: Expressions
@@ -17,13 +18,16 @@ class ExpressionUtilImpl(
         val openParenthesesNum = currentExpressionText.count { it == '(' }
         val closeParenthesesNum = currentExpressionText.count { it == ')' }
 
-        val lastDigitNumberOrCloseParentheses = currentExpressionText
+        val digitNumberOrCloseParenthesesOrExpOrPi = currentExpressionText
             .getOrNull(cursorPosition)
-            ?.digitToIntOrNull() != null || currentExpressionText.getOrNull(cursorPosition) == ')'
+            ?.digitToIntOrNull() != null
+                || currentExpressionText.getOrNull(cursorPosition) == ')'
+                || currentExpressionText.getOrNull(cursorPosition) == 'e'
+                || currentExpressionText.getOrNull(cursorPosition) == 'π'
 
         val newExpression = when {
-            openParenthesesNum == (closeParenthesesNum + 1) && lastDigitNumberOrCloseParentheses -> ")"
-            openParenthesesNum > closeParenthesesNum && lastDigitNumberOrCloseParentheses -> ")"
+            openParenthesesNum == (closeParenthesesNum + 1) && digitNumberOrCloseParenthesesOrExpOrPi -> ")"
+            openParenthesesNum > closeParenthesesNum && digitNumberOrCloseParenthesesOrExpOrPi -> ")"
             else -> "("
         }
 
@@ -57,7 +61,14 @@ class ExpressionUtilImpl(
     override fun addActionValueToExpression(
         action: ButtonAction,
         currentExpression: TextFieldValue
-    ): String = addItemToExpression(action.value, currentExpression)
+    ): String {
+        val newItem = when (action) {
+            is ButtonLog, ButtonLn, ButtonSquareRoot -> "${action.value}("
+            else -> action.value
+        }
+
+        return addItemToExpression(newItem, currentExpression)
+    }
 
     private fun addItemToExpression(
         item: String,

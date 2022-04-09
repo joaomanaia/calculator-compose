@@ -1,4 +1,4 @@
-package com.infinitepower.calculator.compose.ui.components.button
+package com.infinitepower.calculator.compose.ui.components.button.primary
 
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.core.animateFloatAsState
@@ -16,6 +16,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
 import com.infinitepower.calculator.compose.ui.theme.CalculatorTheme
 import com.infinitepower.calculator.compose.ui.theme.spacing
 
@@ -23,14 +24,14 @@ import com.infinitepower.calculator.compose.ui.theme.spacing
 @OptIn(ExperimentalFoundationApi::class)
 internal fun ButtonGrid(
     modifier: Modifier = Modifier,
-    buttonGridState: ButtonGridState = ButtonGridState.EXPANDED,
+    buttonGridExpanded: Boolean = true,
     onActionClick: (action: ButtonAction) -> Unit
 ) {
-    val actions = ButtonAction.getAllButtons()
+    val actions = ButtonAction.getAllPrimaryButtons()
 
     ButtonGridImpl(
         modifier = modifier,
-        buttonGridState = buttonGridState,
+        buttonGridExpanded = buttonGridExpanded,
         actions = actions,
         onActionClick = onActionClick
     )
@@ -38,16 +39,17 @@ internal fun ButtonGrid(
 
 @Composable
 @ExperimentalFoundationApi
-fun ButtonGridImpl(
+private fun ButtonGridImpl(
     modifier: Modifier = Modifier,
-    buttonGridState: ButtonGridState,
+    buttonGridExpanded: Boolean,
     actions: List<ButtonAction>,
     onActionClick: (action: ButtonAction) -> Unit
 ) {
     val spaceSmall = MaterialTheme.spacing.small
+    val spaceMedium = MaterialTheme.spacing.medium
 
     val buttonAspectRatio by animateFloatAsState(
-        targetValue = if (buttonGridState == ButtonGridState.EXPANDED) 1f else 1f / 0.7f
+        targetValue = if (buttonGridExpanded) 1f else 1f / 0.7f
     )
 
     LazyVerticalGrid(
@@ -55,12 +57,16 @@ fun ButtonGridImpl(
         cells = GridCells.Fixed(count = 4),
         verticalArrangement = Arrangement.spacedBy(spaceSmall),
         horizontalArrangement = Arrangement.spacedBy(spaceSmall),
-        contentPadding = PaddingValues(MaterialTheme.spacing.medium)
+        contentPadding = PaddingValues(
+            start = spaceMedium,
+            end = spaceMedium,
+            bottom = spaceMedium
+        )
     ) {
         items(items = actions) { action ->
             ButtonComponent(
                 buttonAction = action,
-                buttonGridState = buttonGridState,
+                buttonGridExpanded = buttonGridExpanded,
                 modifier = Modifier
                     .fillParentMaxWidth()
                     .aspectRatio(buttonAspectRatio),
@@ -78,7 +84,7 @@ private fun ButtonGridPreview() {
         Surface {
             ButtonGrid(
                 modifier = Modifier.fillMaxSize(),
-                buttonGridState = ButtonGridState.EXPANDED,
+                buttonGridExpanded = true,
                 onActionClick = {}
             )
         }
