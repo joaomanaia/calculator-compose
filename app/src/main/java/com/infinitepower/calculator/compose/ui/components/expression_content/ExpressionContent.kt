@@ -27,6 +27,7 @@ import com.infinitepower.calculator.compose.ui.theme.spacing
 @Composable
 fun ExpressionContent(
     modifier: Modifier = Modifier,
+    isPortrait: Boolean,
     currentExpression: TextFieldValue,
     result: String,
     updateTextFieldValue: (value: TextFieldValue) -> Unit
@@ -56,7 +57,9 @@ fun ExpressionContent(
                 horizontalArrangement = Arrangement.spacedBy(
                     MaterialTheme.spacing.extraSmall
                 ),
-                modifier = Modifier.padding(top = spaceLarge)
+                modifier = Modifier.padding(
+                    top = if (isPortrait) spaceLarge else 0.dp
+                )
             ) {
                 BasicTextField(
                     value = currentExpression,
@@ -80,16 +83,18 @@ fun ExpressionContent(
                     )
                 )
             }
-            Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
-            SelectionContainer {
-                Text(
-                    text = result,
-                    style = MaterialTheme.typography.displaySmall,
-                    modifier = Modifier.fillMaxWidth(),
-                    textAlign = TextAlign.End,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
+            if (isPortrait) {
+                Spacer(modifier = Modifier.height(MaterialTheme.spacing.small))
+                SelectionContainer {
+                    Text(
+                        text = result,
+                        style = MaterialTheme.typography.displaySmall,
+                        modifier = Modifier.fillMaxWidth(),
+                        textAlign = TextAlign.End,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
         }
     }
@@ -103,6 +108,7 @@ private fun ExpressionContentPreview() {
         Surface {
             ExpressionContent(
                 modifier = Modifier.padding(MaterialTheme.spacing.medium),
+                isPortrait = false,
                 currentExpression = TextFieldValue("1 + 2"),
                 result = "3",
                 updateTextFieldValue = {}

@@ -12,6 +12,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -58,26 +59,26 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    private suspend fun calculateExpression(
+    private fun calculateExpression(
         newExpression: TextFieldValue
     ) {
         val result = expressionUtil.calculateExpression(newExpression.text)
         updateUiState(newExpression, result)
     }
 
-    private suspend fun updateUiState(
+    private fun updateUiState(
         currentExpression: TextFieldValue,
         result: String
     ) {
-        _uiState.emit(
-            uiState.first().copy(
+        _uiState.update { state ->
+            state.copy(
                 currentExpression = currentExpression,
                 result = result
             )
-        )
+        }
     }
 
-    private suspend fun clearExpression() {
+    private fun clearExpression() {
         updateUiState(TextFieldValue(""), "")
     }
 
@@ -113,18 +114,18 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    private suspend fun updateTextFieldValue(
+    private fun updateTextFieldValue(
         value: TextFieldValue
     ) {
         val result = expressionUtil.calculateExpression(value.text)
         updateUiState(value, result)
     }
 
-    private suspend fun changeMoreActionsState(
+    private fun changeMoreActionsState(
         expanded: Boolean
     ) {
-        _uiState.emit(
-            uiState.first().copy(moreActionsExpanded = expanded)
-        )
+        _uiState.update { state ->
+            state.copy(moreActionsExpanded = expanded)
+        }
     }
 }

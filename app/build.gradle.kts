@@ -83,4 +83,5 @@ dependencies {
     kapt(Hilt.androidXHiltCompiler)
     implementation(Hilt.navigationCompose)
     androidTestImplementation(Hilt.hiltAndroidTesting)
-    kaptAndroidTest(Hilt.hiltAndroidCompiler)}
+    kaptAndroidTest(Hilt.hiltAndroidCompiler)
+}

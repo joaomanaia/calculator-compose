@@ -32,28 +32,55 @@ sealed class ButtonAction(
             is ButtonClear -> colorTertiary
         }
 
-        fun getAllPrimaryButtons(): List<ButtonAction> = listOf(
-            ButtonClear,
-            ButtonParentheses,
-            ButtonPercent,
-            ButtonDivide,
-            Button7,
-            Button8,
-            Button9,
-            ButtonMultiply,
-            Button4,
-            Button5,
-            Button6,
-            ButtonMinus,
-            Button1,
-            Button2,
-            Button3,
-            ButtonPlus,
-            Button0,
-            ButtonDot,
-            ButtonRemove,
-            ButtonEqual
-        )
+        fun getAllPrimaryButtons(
+            isPortrait: Boolean
+        ): List<ButtonAction> = if (isPortrait) {
+            listOf(
+                ButtonClear,
+                ButtonParentheses,
+                ButtonPercent,
+                ButtonDivide,
+                Button7,
+                Button8,
+                Button9,
+                ButtonMultiply,
+                Button4,
+                Button5,
+                Button6,
+                ButtonMinus,
+                Button1,
+                Button2,
+                Button3,
+                ButtonPlus,
+                Button0,
+                ButtonDot,
+                ButtonRemove,
+                ButtonEqual
+            )
+        } else {
+            listOf(
+                Button7,
+                Button8,
+                Button9,
+                ButtonDivide,
+                ButtonClear,
+                Button4,
+                Button5,
+                Button6,
+                ButtonMultiply,
+                ButtonParentheses,
+                Button1,
+                Button2,
+                Button3,
+                ButtonMinus,
+                ButtonPercent,
+                Button0,
+                ButtonDot,
+                ButtonRemove,
+                ButtonPlus,
+                ButtonEqual
+            )
+        }
 
         fun getAllSecondaryButtons(): List<ButtonAction> = listOf(
             ButtonSquareRoot,
@@ -86,7 +113,7 @@ sealed class ButtonAction(
     object ButtonPercent : ButtonAction(value = "%")
 
     object ButtonClear : ButtonAction(value = "AC")
-    object ButtonRemove : ButtonAction(value = "←")
+    object ButtonRemove : ButtonAction(value = "⌫")
     object ButtonParentheses : ButtonAction(value = "( )")
 
     object ButtonSquareRoot : ButtonAction(value = "√")

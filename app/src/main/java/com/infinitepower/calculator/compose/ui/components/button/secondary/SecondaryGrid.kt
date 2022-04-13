@@ -26,6 +26,7 @@ import com.infinitepower.calculator.compose.ui.theme.spacing
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 internal fun SecondaryButtonGrid(
     modifier: Modifier = Modifier,
+    isPortrait: Boolean,
     buttonGridExpanded: Boolean,
     onActionClick: (action: ButtonAction) -> Unit,
     onMoreActionsClick: (expanded: Boolean) -> Unit
@@ -34,6 +35,7 @@ internal fun SecondaryButtonGrid(
 
     SecondaryButtonGridImpl(
         modifier = modifier,
+        isPortrait = isPortrait,
         actions = actions,
         buttonGridExpanded = buttonGridExpanded,
         onActionClick = onActionClick,
@@ -46,6 +48,7 @@ internal fun SecondaryButtonGrid(
 @ExperimentalFoundationApi
 private fun SecondaryButtonGridImpl(
     modifier: Modifier = Modifier,
+    isPortrait: Boolean,
     actions: List<ButtonAction>,
     buttonGridExpanded: Boolean,
     onActionClick: (action: ButtonAction) -> Unit,
@@ -58,15 +61,15 @@ private fun SecondaryButtonGridImpl(
 
     Row(
         verticalAlignment = Alignment.Top,
-        modifier = Modifier.padding(end = spaceMedium)
+        modifier = modifier.padding(end = spaceMedium)
     ) {
         LazyVerticalGrid(
-            modifier = modifier.weight(1f),
-            cells = GridCells.Fixed(count = 4),
+            modifier = Modifier.weight(1f),
+            cells = GridCells.Fixed(count = if (isPortrait) 4 else 3),
             verticalArrangement = Arrangement.spacedBy(spaceSmall),
             horizontalArrangement = Arrangement.spacedBy(spaceSmall),
             contentPadding = PaddingValues(
-                horizontal = spaceMedium,
+                horizontal = if (isPortrait) spaceMedium else 0.dp,
                 vertical = spaceSmall
             )
         ) {
@@ -78,13 +81,15 @@ private fun SecondaryButtonGridImpl(
                 )
             }
         }
-        MoreSecondaryActionsItem(
-            modifier = Modifier.padding(top = spaceSmall),
-            buttonGridExpanded = buttonGridExpanded,
-            onClick = {
-                onMoreActionsClick(!buttonGridExpanded)
-            }
-        )
+        if (isPortrait) {
+            MoreSecondaryActionsItem(
+                modifier = Modifier.padding(top = spaceSmall),
+                buttonGridExpanded = buttonGridExpanded,
+                onClick = {
+                    onMoreActionsClick(!buttonGridExpanded)
+                }
+            )
+        }
     }
 }
 
@@ -124,6 +129,7 @@ private fun ButtonGridPreview() {
         Surface {
             SecondaryButtonGrid(
                 modifier = Modifier.fillMaxWidth(),
+                isPortrait = true,
                 buttonGridExpanded = true,
                 onActionClick = {},
                 onMoreActionsClick = {}

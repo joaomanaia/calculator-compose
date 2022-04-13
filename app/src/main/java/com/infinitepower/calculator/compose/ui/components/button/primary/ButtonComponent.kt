@@ -30,6 +30,7 @@ import com.infinitepower.calculator.compose.ui.theme.spacing
 @OptIn(ExperimentalMaterial3Api::class)
 internal fun ButtonComponent(
     modifier: Modifier = Modifier,
+    isPortrait: Boolean,
     buttonGridExpanded: Boolean = true,
     buttonAction: ButtonAction,
     onClick: () -> Unit
@@ -38,6 +39,7 @@ internal fun ButtonComponent(
 
     ButtonComponentImpl(
         modifier = modifier,
+        isPortrait = isPortrait,
         buttonGridExpanded = buttonGridExpanded,
         actionText = buttonAction.value,
         color = color,
@@ -49,6 +51,7 @@ internal fun ButtonComponent(
 @ExperimentalMaterial3Api
 private fun ButtonComponentImpl(
     modifier: Modifier = Modifier,
+    isPortrait: Boolean,
     buttonGridExpanded: Boolean,
     actionText: String,
     color: Color,
@@ -64,7 +67,7 @@ private fun ButtonComponentImpl(
         animationSpec = tween(durationMillis = 250, easing = LinearEasing)
     )
 
-    val textStyle = if (buttonGridExpanded) {
+    val textStyle = if (isPortrait && !buttonGridExpanded) {
         MaterialTheme.typography.headlineMedium
     } else MaterialTheme.typography.titleMedium
 
@@ -77,8 +80,7 @@ private fun ButtonComponentImpl(
         interactionSource = interactionSource
     ) {
         Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier.padding(MaterialTheme.spacing.medium)
+            contentAlignment = Alignment.Center
         ) {
             Text(
                 text = actionText,
@@ -101,6 +103,7 @@ private fun ButtonComponentPreview() {
                         .size(100.dp)
                         .padding(MaterialTheme.spacing.medium),
                     buttonAction = ButtonAction.Button1,
+                    isPortrait = false,
                     onClick = {}
                 )
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
@@ -111,6 +114,7 @@ private fun ButtonComponentPreview() {
                         .padding(MaterialTheme.spacing.medium),
                     buttonAction = ButtonAction.Button1,
                     buttonGridExpanded = false,
+                    isPortrait = false,
                     onClick = {}
                 )
             }

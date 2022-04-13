@@ -10,15 +10,4 @@ object AndroidX {
     private const val lifecycleVersion = "2.5.0-alpha05"
 
     const val lifecycleRuntimeKtx = "androidx.lifecycle:lifecycle-runtime-ktx:$lifecycleVersion"
-    const val lifecycleLivedataKtx = "androidx.lifecycle:lifecycle-livedata-ktx:$lifecycleVersion"
-
-    // Paging
-    private const val pagingVersion = "3.1.1"
-
-    // Paging Runtime Ktx
-    const val pagingRuntimeKtx = "androidx.paging:paging-runtime-ktx:$pagingVersion"
-
-    // Paging Jetpack Compose
-    private const val pagingJetpackComposeVersion = "1.0.0-alpha14"
-    const val pagingJetpackCompose = "androidx.paging:paging-compose:$pagingJetpackComposeVersion"
 }
