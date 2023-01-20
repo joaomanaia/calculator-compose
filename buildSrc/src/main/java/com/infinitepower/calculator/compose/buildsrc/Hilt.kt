@@ -15,5 +15,5 @@ object Hilt {
 
     const val hiltAndroidTesting = "com.google.dagger:hilt-android-testing:$hiltVersion"
 
-    const val hiltAndroidCompiler = "com.google.dagger:hilt-android-compiler$hiltVersion"
+    const val hiltAndroidCompiler = "com.google.dagger:hilt-android-compiler:$hiltVersion"
 }
