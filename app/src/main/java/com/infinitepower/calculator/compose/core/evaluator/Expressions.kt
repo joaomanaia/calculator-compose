@@ -20,8 +20,7 @@ class Expressions {
 
         evaluator.addFunction("ln", object : Function() {
             override fun call(arguments: List<BigDecimal>): BigDecimal {
-                if (arguments.size != 1)
-                    throw ExpressionException("ln requires one argument")
+                if (arguments.size != 1) throw ExpressionException("ln requires one argument")
 
                 return log(arguments.first().toDouble(), Math.E).toBigDecimal()
             }
@@ -29,8 +28,7 @@ class Expressions {
 
         evaluator.addFunction("log", object : Function() {
             override fun call(arguments: List<BigDecimal>): BigDecimal {
-                if (arguments.size != 1)
-                    throw ExpressionException("log requires one argument")
+                if (arguments.size != 1) throw ExpressionException("log requires one argument")
 
                 return log10(arguments.first().toDouble()).toBigDecimal()
             }
@@ -38,8 +36,7 @@ class Expressions {
 
         evaluator.addFunction("√", object : Function() {
             override fun call(arguments: List<BigDecimal>): BigDecimal {
-                if (arguments.size != 1)
-                    throw ExpressionException("square root requires one argument")
+                if (arguments.size != 1) throw ExpressionException("square root requires one argument")
 
                 return sqrt(arguments.first().toDouble()).toBigDecimal()
             }
@@ -54,7 +51,6 @@ class Expressions {
 
     fun setPrecision(precision: Int): Expressions {
         evaluator.mathContext = MathContext(precision, roundingMode)
-
 
         return this
     }
@@ -73,7 +69,6 @@ class Expressions {
 
     fun define(name: String, value: Double): Expressions {
         define(name, value.toString())
-
         return this
     }
 
@@ -121,7 +116,7 @@ class Expressions {
         return try {
             evaluator.eval(parse(expression)).round(evaluator.mathContext).stripTrailingZeros()
                 .toEngineeringString()
-        }catch (e:Throwable){
+        } catch (e: Throwable) {
             e.cause?.message ?: e.message ?: "unknown error"
         }
     }

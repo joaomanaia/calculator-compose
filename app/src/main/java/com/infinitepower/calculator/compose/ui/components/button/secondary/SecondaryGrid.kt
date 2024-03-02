@@ -1,19 +1,16 @@
 package com.infinitepower.calculator.compose.ui.components.button.secondary
 
 import android.content.res.Configuration
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material.icons.rounded.ArrowDropUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,7 +20,7 @@ import com.infinitepower.calculator.compose.ui.theme.CalculatorTheme
 import com.infinitepower.calculator.compose.ui.theme.spacing
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class)
 internal fun SecondaryButtonGrid(
     modifier: Modifier = Modifier,
     isPortrait: Boolean,
@@ -45,7 +42,6 @@ internal fun SecondaryButtonGrid(
 
 @Composable
 @ExperimentalMaterial3Api
-@ExperimentalFoundationApi
 private fun SecondaryButtonGridImpl(
     modifier: Modifier = Modifier,
     isPortrait: Boolean,
@@ -65,7 +61,7 @@ private fun SecondaryButtonGridImpl(
     ) {
         LazyVerticalGrid(
             modifier = Modifier.weight(1f),
-            cells = GridCells.Fixed(count = if (isPortrait) 4 else 3),
+            columns = GridCells.Fixed(count = if (isPortrait) 4 else 3),
             verticalArrangement = Arrangement.spacedBy(spaceSmall),
             horizontalArrangement = Arrangement.spacedBy(spaceSmall),
             contentPadding = PaddingValues(
@@ -76,7 +72,7 @@ private fun SecondaryButtonGridImpl(
             items(items = gridActions) { action ->
                 SecondaryButtonComponent(
                     buttonAction = action,
-                    modifier = Modifier.fillParentMaxWidth(),
+                    modifier = Modifier.fillMaxWidth(),
                     onClick = { onActionClick(action) }
                 )
             }

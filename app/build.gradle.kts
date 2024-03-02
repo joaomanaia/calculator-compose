@@ -1,29 +1,22 @@
-import com.infinitepower.calculator.compose.buildsrc.ProjectConfig
-import com.infinitepower.calculator.compose.buildsrc.AndroidX
-import com.infinitepower.calculator.compose.buildsrc.Compose
-import com.infinitepower.calculator.compose.buildsrc.Testing
-import com.infinitepower.calculator.compose.buildsrc.Hilt
-import com.infinitepower.calculator.compose.buildsrc.Material
-
 plugins {
     id("com.android.application")
     kotlin("android")
-    kotlin("kapt")
+    id("com.google.devtools.ksp")
     id("dagger.hilt.android.plugin")
 }
 
 android {
-    namespace = ProjectConfig.namespace
-    compileSdk = ProjectConfig.compileSdk
+    namespace = "com.infinitepower.calculator.compose"
+    compileSdk = 34
 
     defaultConfig {
-        applicationId = ProjectConfig.applicationId
-        minSdk = ProjectConfig.minSdk
-        targetSdk = ProjectConfig.targetSdk
-        versionCode = ProjectConfig.versionCode
-        versionName = ProjectConfig.versionName
+        applicationId = "com.infinitepower.calculator.compose"
+        minSdk = 21
+        targetSdk = 34
+        versionCode = 3
+        versionName = "1.1.0"
 
-        testInstrumentationRunner = ProjectConfig.testInstrumentationRunner
+        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -49,39 +42,31 @@ android {
         compose = true
     }
     composeOptions {
-        kotlinCompilerExtensionVersion = Compose.composeVersion
+        kotlinCompilerExtensionVersion = libs.versions.androidxComposeCompiler.get()
     }
-    packagingOptions {
-        exclude("META-INF/AL2.0")
-        exclude("META-INF/LGPL2.1")
+    packaging {
+        resources {
+            excludes.add("META-INF/AL2.0")
+            excludes.add("META-INF/LGPL2.1")
+        }
     }
 }
 
 dependencies {
-    implementation(AndroidX.coreKtx)
-    implementation(AndroidX.lifecycleRuntimeKtx)
+    implementation(libs.androidx.core.ktx)
+    implementation(libs.androidx.activity.compose)
 
-    testImplementation(Testing.junit)
-    androidTestImplementation(Testing.junitAndroidExt)
-    androidTestImplementation(Testing.espressoCore)
-    androidTestImplementation(Testing.composeUiTestJunit4)
+    implementation(libs.hilt.android)
+    implementation(libs.hilt.navigationCompose)
+    ksp(libs.hilt.compiler)
 
-    implementation(AndroidX.activityCompose)
 
-    implementation(Compose.composeMaterial3)
+    implementation(libs.google.material)
 
-    debugImplementation(Compose.uiTooling)
-    debugImplementation(Compose.uiTestManifest)
-    implementation(Compose.composeUi)
-    implementation(Compose.composeUiToolingPreview)
-    implementation(Compose.iconsExtended)
-
-    implementation(Material.material)
-
-    implementation(Hilt.hiltAndroid)
-    kapt(Hilt.hiltCompiler)
-    kapt(Hilt.androidXHiltCompiler)
-    implementation(Hilt.navigationCompose)
-    androidTestImplementation(Hilt.hiltAndroidTesting)
-    kaptAndroidTest(Hilt.hiltAndroidCompiler)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.material3)
+    implementation(libs.androidx.compose.ui.tooling)
+    implementation(libs.androidx.compose.ui.testManifest)
+    implementation(libs.androidx.compose.material.iconsExtended)
 }

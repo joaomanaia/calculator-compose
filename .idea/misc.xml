@@ -14,7 +14,7 @@
         <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/components/button/secondary/SecondaryButtonComponent.kt" value="0.31139240506329113" />
         <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/components/button/secondary/SecondaryGrid.kt" value="0.33" />
         <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/components/expression_content/ExpressionContent.kt" value="0.31139240506329113" />
-        <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/home/HomeScreen.kt" value="0.15256410256410258" />
+        <entry key="app/src/main/java/com/infinitepower/calculator/compose/ui/home/HomeScreen.kt" value="0.33" />
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.1" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.226" />
         <entry key="app/src/main/res/mipmap-anydpi-v26/ic_launcher.xml" value="0.1" />
@@ -23,7 +23,7 @@
     </option>
   </component>
   <component name="ExternalStorageConfigurationManager" enabled="true" />
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_11" default="true" project-jdk-name="Android Studio default JDK" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_17" default="true" project-jdk-name="jbr-17" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/build/classes" />
   </component>
   <component name="ProjectType">

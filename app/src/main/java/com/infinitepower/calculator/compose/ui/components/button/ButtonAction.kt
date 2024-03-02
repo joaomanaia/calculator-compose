@@ -19,17 +19,23 @@ sealed class ButtonAction(
             @ReadOnlyComposable
             get() = MaterialTheme.colorScheme.primary.copy(alpha = 0.25f)
 
-        private val colorTertiary: Color
+        private val colorPrimaryContainer: Color
             @Composable
             @ReadOnlyComposable
-            get() = MaterialTheme.colorScheme.tertiary
+            get() = MaterialTheme.colorScheme.primaryContainer
+
+        private val colorTertiaryContainer: Color
+            @Composable
+            @ReadOnlyComposable
+            get() = MaterialTheme.colorScheme.tertiaryContainer
 
         @Composable
         @ReadOnlyComposable
         fun ButtonAction.getColorByButton(): Color = when (this) {
             is Button0, Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, ButtonDot, ButtonRemove, ButtonSquareRoot, ButtonPI, ButtonPower, ButtonFactorial, ButtonSin, ButtonCos, ButtonTan, ButtonLog, ButtonLn, ButtonExp, -> colorSurface
-            is ButtonParentheses, ButtonPercent, ButtonDivide, ButtonMultiply, ButtonMinus, ButtonPlus, ButtonEqual -> colorPrimary
-            is ButtonClear -> colorTertiary
+            is ButtonParentheses, ButtonPercent, ButtonDivide, ButtonMultiply, ButtonMinus, ButtonPlus -> colorPrimary
+            is ButtonEqual -> colorPrimaryContainer
+            is ButtonClear -> colorTertiaryContainer
         }
 
         fun getAllPrimaryButtons(

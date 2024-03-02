@@ -1,8 +1,27 @@
+import com.github.benmanes.gradle.versions.updates.DependencyUpdatesTask
+
 plugins {
-    id("com.android.application") version "7.3.0-alpha07" apply false
-    id("com.android.library") version "7.3.0-alpha07" apply false
-    id("org.jetbrains.kotlin.android") version "1.6.10" apply false
-    id("com.google.dagger.hilt.android") version "2.41" apply false
-    id("org.jetbrains.kotlin.jvm") version "1.6.10" apply false
-    id("com.github.ben-manes.versions") version "0.42.0"
+    alias(libs.plugins.android.application) apply false
+    alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.kotlin.android) apply false
+    alias(libs.plugins.hilt) apply false
+    alias(libs.plugins.ksp) apply false
+    alias(libs.plugins.dependencyUpdates)
+}
+
+tasks.withType<DependencyUpdatesTask> {
+    rejectVersionIf {
+        // Don't allow non-stable versions, unless we are already using one for this dependency
+        isNonStable(candidate.version) && !isNonStable(currentVersion)
+    }
+}
+
+/**
+ * Decides if this version is stable or not.
+ */
+fun isNonStable(version: String): Boolean {
+    val stableKeyword = listOf("RELEASE", "FINAL", "GA").any { version.uppercase().contains(it) }
+    val regex = "^[0-9,.v-]+(-r)?$".toRegex()
+    val isStable = stableKeyword || regex.matches(version)
+    return !isStable
 }

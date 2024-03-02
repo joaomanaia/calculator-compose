@@ -20,7 +20,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.infinitepower.calculator.compose.ui.home.HomeUiEvent
 import com.infinitepower.calculator.compose.ui.theme.CalculatorTheme
 import com.infinitepower.calculator.compose.ui.theme.spacing
 
@@ -67,7 +66,7 @@ fun ExpressionContent(
                     textStyle = MaterialTheme.typography.displayLarge.copy(
                         letterSpacing = 8.sp,
                         textAlign = TextAlign.End,
-                        color = MaterialTheme.colorScheme.inverseSurface
+                        color = MaterialTheme.colorScheme.onSurface
                     ),
                     modifier = Modifier
                         .weight(1f)
@@ -109,8 +108,8 @@ private fun ExpressionContentPreview() {
             ExpressionContent(
                 modifier = Modifier.padding(MaterialTheme.spacing.medium),
                 isPortrait = false,
-                currentExpression = TextFieldValue("1 + 2"),
-                result = "3",
+                currentExpression = TextFieldValue("21+2"),
+                result = "23",
                 updateTextFieldValue = {}
             )
         }

@@ -3,14 +3,10 @@ package com.infinitepower.calculator.compose.ui.components.button.primary
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.lazy.GridCells
-import androidx.compose.foundation.lazy.LazyVerticalGrid
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -24,7 +20,6 @@ import com.infinitepower.calculator.compose.ui.theme.CalculatorTheme
 import com.infinitepower.calculator.compose.ui.theme.spacing
 
 @Composable
-@OptIn(ExperimentalFoundationApi::class)
 internal fun ButtonGrid(
     modifier: Modifier = Modifier,
     isPortrait: Boolean,
@@ -43,7 +38,6 @@ internal fun ButtonGrid(
 }
 
 @Composable
-@ExperimentalFoundationApi
 private fun ButtonGridImpl(
     modifier: Modifier = Modifier,
     isPortrait: Boolean,
@@ -72,10 +66,11 @@ private fun ButtonGridImpl(
 
     LazyVerticalGrid(
         modifier = modifier,
-        cells = GridCells.Fixed(count = if (isPortrait) 4 else 5),
+        columns = GridCells.Fixed(count = if (isPortrait) 4 else 5),
         verticalArrangement = Arrangement.spacedBy(spaceSmall),
         horizontalArrangement = Arrangement.spacedBy(spaceSmall),
-        contentPadding = gridPadding
+        contentPadding = gridPadding,
+        userScrollEnabled = false
     ) {
         items(items = actions) { action ->
             ButtonComponent(
@@ -83,7 +78,7 @@ private fun ButtonGridImpl(
                 isPortrait = isPortrait,
                 buttonGridExpanded = buttonGridExpanded,
                 modifier = Modifier
-                    .fillParentMaxWidth()
+                    .fillMaxWidth()
                     .aspectRatio(buttonAspectRatio),
                 onClick = { onActionClick(action) }
             )

@@ -23,6 +23,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction.Companion.getColorByButton
+import com.infinitepower.calculator.compose.ui.components.text.AutoSizeText
 import com.infinitepower.calculator.compose.ui.theme.CalculatorTheme
 import com.infinitepower.calculator.compose.ui.theme.spacing
 
@@ -85,7 +86,7 @@ private fun ButtonComponentImpl(
             Text(
                 text = actionText,
                 style = textStyle,
-                textAlign = TextAlign.Center,
+                textAlign = TextAlign.Center
             )
         }
     }

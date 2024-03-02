@@ -1,6 +1,7 @@
 package com.infinitepower.calculator.compose.ui.home
 
 import android.content.res.Configuration
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -10,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.infinitepower.calculator.compose.ui.components.button.primary.ButtonGrid
 import com.infinitepower.calculator.compose.ui.components.button.secondary.SecondaryButtonGrid
@@ -135,6 +135,7 @@ private fun HomeLandscapeContent(
 
 @Composable
 @Preview(showBackground = true)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
 @Preview(
     showBackground = true,
     device = "spec:shape=Normal,width=2340,height=1080,unit=px,dpi=440",
@@ -144,8 +145,8 @@ private fun HomeScreenPreview() {
         Surface {
             HomeScreenImpl(
                 uiState = HomeUiState(
-                    currentExpression = TextFieldValue("2 + 1"),
-                    result = "3"
+                    currentExpression = TextFieldValue("22+1"),
+                    result = "23"
                 ),
                 onEvent = {}
             )
