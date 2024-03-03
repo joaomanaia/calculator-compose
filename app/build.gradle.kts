@@ -60,7 +60,6 @@ dependencies {
     implementation(libs.hilt.navigationCompose)
     ksp(libs.hilt.compiler)
 
-
     implementation(libs.google.material)
 
     implementation(platform(libs.androidx.compose.bom))
@@ -69,4 +68,6 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling)
     implementation(libs.androidx.compose.ui.testManifest)
     implementation(libs.androidx.compose.material.iconsExtended)
+
+    implementation(libs.androidx.constraintlayout.compose)
 }

@@ -3,16 +3,14 @@ package com.infinitepower.calculator.compose.ui.home
 import androidx.compose.ui.text.input.TextFieldValue
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
 
-sealed class HomeUiEvent {
+sealed interface HomeUiEvent {
     data class OnButtonActionClick(
         val action: ButtonAction
-    ) : HomeUiEvent()
+    ) : HomeUiEvent
 
     data class UpdateTextFieldValue(
         val value: TextFieldValue
-    ) : HomeUiEvent()
+    ) : HomeUiEvent
 
-    data class OnChangeMoreActionsState(
-        val expanded: Boolean
-    ) : HomeUiEvent()
+    data object OnChangeMoreActionsClick : HomeUiEvent
 }

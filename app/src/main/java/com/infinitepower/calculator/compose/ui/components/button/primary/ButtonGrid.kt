@@ -2,7 +2,6 @@ package com.infinitepower.calculator.compose.ui.components.button.primary
 
 import android.content.res.Configuration
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -10,7 +9,7 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.tooling.preview.Preview
@@ -23,7 +22,6 @@ import com.infinitepower.calculator.compose.ui.theme.spacing
 internal fun ButtonGrid(
     modifier: Modifier = Modifier,
     isPortrait: Boolean,
-    buttonGridExpanded: Boolean = true,
     onActionClick: (action: ButtonAction) -> Unit
 ) {
     val actions = ButtonAction.getAllPrimaryButtons(isPortrait = isPortrait)
@@ -31,7 +29,6 @@ internal fun ButtonGrid(
     ButtonGridImpl(
         modifier = modifier,
         isPortrait = isPortrait,
-        buttonGridExpanded = buttonGridExpanded,
         actions = actions,
         onActionClick = onActionClick
     )
@@ -41,20 +38,15 @@ internal fun ButtonGrid(
 private fun ButtonGridImpl(
     modifier: Modifier = Modifier,
     isPortrait: Boolean,
-    buttonGridExpanded: Boolean,
     actions: List<ButtonAction>,
     onActionClick: (action: ButtonAction) -> Unit
 ) {
     val spaceSmall = MaterialTheme.spacing.small
     val spaceMedium = MaterialTheme.spacing.medium
 
-    val buttonAspectRatio by animateFloatAsState(
-        targetValue = when {
-            isPortrait && !buttonGridExpanded -> 1f
-            isPortrait && buttonGridExpanded -> 1f / 0.7f
-            else -> 1f / 0.5f
-        }
-    )
+    val itemsPerCol = remember(isPortrait) {
+        if (isPortrait) 5 else 4
+    }
 
     val gridPadding = if (isPortrait) {
         PaddingValues(
@@ -64,24 +56,38 @@ private fun ButtonGridImpl(
         )
     } else PaddingValues(0.dp)
 
-    LazyVerticalGrid(
-        modifier = modifier,
-        columns = GridCells.Fixed(count = if (isPortrait) 4 else 5),
-        verticalArrangement = Arrangement.spacedBy(spaceSmall),
-        horizontalArrangement = Arrangement.spacedBy(spaceSmall),
-        contentPadding = gridPadding,
-        userScrollEnabled = false
+    BoxWithConstraints(
+        modifier = modifier
     ) {
-        items(items = actions) { action ->
-            ButtonComponent(
-                buttonAction = action,
-                isPortrait = isPortrait,
-                buttonGridExpanded = buttonGridExpanded,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(buttonAspectRatio),
-                onClick = { onActionClick(action) }
-            )
+        val heightPerItem = remember(maxHeight, itemsPerCol) {
+            maxHeight / itemsPerCol - 8.dp
+        }
+
+        LazyVerticalGrid(
+            modifier = Modifier.fillMaxWidth(),
+            columns = GridCells.Fixed(count = if (isPortrait) 4 else 5),
+            verticalArrangement = Arrangement.spacedBy(spaceSmall),
+            horizontalArrangement = Arrangement.spacedBy(spaceSmall),
+            contentPadding = gridPadding,
+            userScrollEnabled = false
+        ) {
+            items(items = actions) { action ->
+                BoxWithConstraints(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    // Ensure that the item height is not greater than the max width,
+                    // to make sure that the item is square and not too tall.
+                    val itemHeight = minOf(maxWidth, heightPerItem)
+
+                    ButtonComponent(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(itemHeight),
+                        buttonAction = action,
+                        onClick = { onActionClick(action) }
+                    )
+                }
+            }
         }
     }
 }
@@ -103,9 +109,10 @@ private fun ButtonGridPreview() {
     CalculatorTheme {
         Surface {
             ButtonGrid(
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(400.dp),
                 isPortrait = isPortrait,
-                buttonGridExpanded = true,
                 onActionClick = {}
             )
         }

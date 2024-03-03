@@ -1,7 +1,6 @@
 package com.infinitepower.calculator.compose.ui.home
 
 import android.content.res.Configuration
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -10,7 +9,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
+import androidx.constraintlayout.compose.ConstraintLayout
+import androidx.constraintlayout.compose.Dimension
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.infinitepower.calculator.compose.ui.components.button.primary.ButtonGrid
 import com.infinitepower.calculator.compose.ui.components.button.secondary.SecondaryButtonGrid
@@ -35,7 +36,11 @@ fun HomeScreenImpl(
     uiState: HomeUiState,
     onEvent: (event: HomeUiEvent) -> Unit
 ) {
-    val isPortrait = LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT
+    val localConfiguration = LocalConfiguration.current
+
+    val isPortrait = remember(localConfiguration.orientation) {
+        localConfiguration.orientation == Configuration.ORIENTATION_PORTRAIT
+    }
 
     Surface {
         if (isPortrait) {
@@ -57,9 +62,20 @@ private fun HomePortraitContent(
     uiState: HomeUiState,
     onEvent: (event: HomeUiEvent) -> Unit
 ) {
-    Column {
+    ConstraintLayout(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        val (expressionContent, buttonsGrid) = createRefs()
+
         ExpressionContent(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier.constrainAs(expressionContent) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                top.linkTo(parent.top)
+                bottom.linkTo(buttonsGrid.top)
+
+                height = Dimension.fillToConstraints
+            },
             isPortrait = true,
             currentExpression = uiState.currentExpression,
             result = uiState.result,
@@ -67,25 +83,33 @@ private fun HomePortraitContent(
                 onEvent(HomeUiEvent.UpdateTextFieldValue(value))
             }
         )
-        SecondaryButtonGrid(
-            modifier = Modifier.fillMaxWidth(),
-            isPortrait = true,
-            onActionClick = { action ->
-                onEvent(HomeUiEvent.OnButtonActionClick(action))
-            },
-            onMoreActionsClick = { expanded ->
-                onEvent(HomeUiEvent.OnChangeMoreActionsState(expanded))
-            },
-            buttonGridExpanded = uiState.moreActionsExpanded
-        )
-        ButtonGrid(
-            modifier = Modifier.fillMaxWidth(),
-            isPortrait = true,
-            onActionClick = { action ->
-                onEvent(HomeUiEvent.OnButtonActionClick(action))
-            },
-            buttonGridExpanded = uiState.moreActionsExpanded
-        )
+
+        Column(
+            modifier = Modifier.constrainAs(buttonsGrid) {
+                start.linkTo(parent.start)
+                end.linkTo(parent.end)
+                bottom.linkTo(parent.bottom)
+
+                height = Dimension.fillToConstraints
+            }
+        ) {
+            SecondaryButtonGrid(
+                modifier = Modifier.fillMaxWidth(),
+                isPortrait = true,
+                onActionClick = { action ->
+                    onEvent(HomeUiEvent.OnButtonActionClick(action))
+                },
+                onMoreActionsClick = { onEvent(HomeUiEvent.OnChangeMoreActionsClick) },
+                buttonGridExpanded = uiState.moreActionsExpanded
+            )
+            ButtonGrid(
+                modifier = Modifier.fillMaxWidth(),
+                isPortrait = true,
+                onActionClick = { action ->
+                    onEvent(HomeUiEvent.OnButtonActionClick(action))
+                },
+            )
+        }
     }
 }
 
@@ -116,9 +140,7 @@ private fun HomeLandscapeContent(
                 onActionClick = { action ->
                     onEvent(HomeUiEvent.OnButtonActionClick(action))
                 },
-                onMoreActionsClick = { expanded ->
-                    onEvent(HomeUiEvent.OnChangeMoreActionsState(expanded))
-                },
+                onMoreActionsClick = { onEvent(HomeUiEvent.OnChangeMoreActionsClick) },
                 buttonGridExpanded = true
             )
             ButtonGrid(
@@ -127,28 +149,33 @@ private fun HomeLandscapeContent(
                 onActionClick = { action ->
                     onEvent(HomeUiEvent.OnButtonActionClick(action))
                 },
-                buttonGridExpanded = !uiState.moreActionsExpanded
             )
         }
     }
 }
 
 @Composable
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-@Preview(
-    showBackground = true,
-    device = "spec:shape=Normal,width=2340,height=1080,unit=px,dpi=440",
-)
+@PreviewLightDark
 private fun HomeScreenPreview() {
+    var buttonGridExpanded by remember { mutableStateOf(false) }
+
     CalculatorTheme {
         Surface {
             HomeScreenImpl(
                 uiState = HomeUiState(
                     currentExpression = TextFieldValue("22+1"),
-                    result = "23"
+                    result = "23",
+                    moreActionsExpanded = buttonGridExpanded
                 ),
-                onEvent = {}
+                onEvent = { event ->
+                    when (event) {
+                        is HomeUiEvent.OnChangeMoreActionsClick -> {
+                            buttonGridExpanded = !buttonGridExpanded
+                        }
+
+                        else -> {}
+                    }
+                }
             )
         }
     }

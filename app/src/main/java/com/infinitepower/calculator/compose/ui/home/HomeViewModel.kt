@@ -27,7 +27,7 @@ class HomeViewModel @Inject constructor(
         when (event) {
             is HomeUiEvent.OnButtonActionClick -> processAction(event.action)
             is HomeUiEvent.UpdateTextFieldValue -> updateTextFieldValue(event.value)
-            is HomeUiEvent.OnChangeMoreActionsState -> changeMoreActionsState(event.expanded)
+            is HomeUiEvent.OnChangeMoreActionsClick -> changeMoreActionsState()
         }
     }
 
@@ -121,11 +121,9 @@ class HomeViewModel @Inject constructor(
         updateUiState(value, result)
     }
 
-    private fun changeMoreActionsState(
-        expanded: Boolean
-    ) {
+    private fun changeMoreActionsState() {
         _uiState.update { state ->
-            state.copy(moreActionsExpanded = expanded)
+            state.copy(moreActionsExpanded = !state.moreActionsExpanded)
         }
     }
 }

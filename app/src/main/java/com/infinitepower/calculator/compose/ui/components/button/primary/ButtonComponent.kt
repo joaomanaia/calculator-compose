@@ -1,6 +1,5 @@
 package com.infinitepower.calculator.compose.ui.components.button.primary
 
-import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.tween
@@ -8,18 +7,16 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction.Companion.getColorByButton
@@ -28,74 +25,64 @@ import com.infinitepower.calculator.compose.ui.theme.CalculatorTheme
 import com.infinitepower.calculator.compose.ui.theme.spacing
 
 @Composable
-@OptIn(ExperimentalMaterial3Api::class)
 internal fun ButtonComponent(
     modifier: Modifier = Modifier,
-    isPortrait: Boolean,
-    buttonGridExpanded: Boolean = true,
     buttonAction: ButtonAction,
     onClick: () -> Unit
 ) {
     val color = buttonAction.getColorByButton()
 
-    ButtonComponentImpl(
+    ButtonComponent(
         modifier = modifier,
-        isPortrait = isPortrait,
-        buttonGridExpanded = buttonGridExpanded,
-        actionText = buttonAction.value,
-        color = color,
+        text = buttonAction.value,
+        surfaceColor = color,
         onClick = onClick
     )
 }
 
 @Composable
-@ExperimentalMaterial3Api
-private fun ButtonComponentImpl(
+private fun ButtonComponent(
     modifier: Modifier = Modifier,
-    isPortrait: Boolean,
-    buttonGridExpanded: Boolean,
-    actionText: String,
-    color: Color,
+    text: String,
+    surfaceColor: Color = MaterialTheme.colorScheme.surface,
     onClick: () -> Unit
 ) {
-    val interactionSource = remember {
-        MutableInteractionSource()
-    }
+    val interactionSource = remember { MutableInteractionSource() }
 
     val surfacePressed by interactionSource.collectIsPressedAsState()
     val surfaceShape by animateDpAsState(
-        targetValue = if (surfacePressed) 20.dp else 100.dp,
-        animationSpec = tween(durationMillis = 250, easing = LinearEasing)
+        targetValue = if (surfacePressed) SURFACE_PRESS_SHAPE else SURFACE_CIRCLE_SHAPE,
+        animationSpec = tween(durationMillis = 250, easing = LinearEasing),
+        label = "Surface Shape"
     )
-
-    val textStyle = if (isPortrait && !buttonGridExpanded) {
-        MaterialTheme.typography.headlineMedium
-    } else MaterialTheme.typography.titleMedium
 
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(surfaceShape),
         tonalElevation = 1.dp,
-        color = color,
+        color = surfaceColor,
         onClick = onClick,
         interactionSource = interactionSource
     ) {
         Box(
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.Center,
+            modifier = Modifier.fillMaxSize()
         ) {
-            Text(
-                text = actionText,
-                style = textStyle,
-                textAlign = TextAlign.Center
+            AutoSizeText(
+                text = text,
+                modifier = Modifier.padding(8.dp),
+                color = contentColorFor(backgroundColor = surfaceColor)
             )
         }
     }
 }
 
+private val SURFACE_CIRCLE_SHAPE = 100.dp
+private val SURFACE_PRESS_SHAPE = 20.dp
+
 @Composable
-@Preview(showBackground = true)
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES)
-private fun ButtonComponentPreview() {
+@PreviewLightDark
+private fun SquareButtonComponentPreview() {
     CalculatorTheme {
         Surface {
             Column {
@@ -104,18 +91,25 @@ private fun ButtonComponentPreview() {
                         .size(100.dp)
                         .padding(MaterialTheme.spacing.medium),
                     buttonAction = ButtonAction.Button1,
-                    isPortrait = false,
                     onClick = {}
                 )
-                Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
+            }
+        }
+    }
+}
+
+@Composable
+@PreviewLightDark
+private fun SmallButtonComponent2Preview() {
+    CalculatorTheme {
+        Surface {
+            Column {
                 ButtonComponent(
                     modifier = Modifier
                         .width(100.dp)
                         .aspectRatio(1f / 0.7f)
                         .padding(MaterialTheme.spacing.medium),
                     buttonAction = ButtonAction.Button1,
-                    buttonGridExpanded = false,
-                    isPortrait = false,
                     onClick = {}
                 )
             }
