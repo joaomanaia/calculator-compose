@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewLightDark
 import androidx.compose.ui.unit.dp
+import com.infinitepower.calculator.compose.core.AngleType
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
 import com.infinitepower.calculator.compose.ui.theme.CalculatorTheme
 import com.infinitepower.calculator.compose.ui.theme.spacing
@@ -31,10 +32,17 @@ internal fun SecondaryButtonGrid(
     modifier: Modifier = Modifier,
     isPortrait: Boolean,
     buttonGridExpanded: Boolean,
+    angleType: AngleType,
+    isInverse: Boolean,
     onActionClick: (action: ButtonAction) -> Unit,
     onMoreActionsClick: () -> Unit
 ) {
-    val actions = ButtonAction.getAllSecondaryButtons()
+    val actions = remember(angleType, isInverse) {
+        ButtonAction.getAllSecondaryButtons(
+            angleType = angleType,
+            isInverse = isInverse
+        )
+    }
 
     SecondaryButtonGridImpl(
         modifier = modifier,
@@ -174,6 +182,8 @@ private fun ButtonGridPreview() {
                     .height(200.dp),
                 isPortrait = true,
                 buttonGridExpanded = buttonGridExpanded,
+                angleType = AngleType.DEG,
+                isInverse = false,
                 onActionClick = {},
                 onMoreActionsClick = { buttonGridExpanded = !buttonGridExpanded }
             )

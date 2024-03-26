@@ -3,17 +3,13 @@ package com.infinitepower.calculator.compose.ui.home
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.infinitepower.calculator.compose.core.util.ExpressionUtil
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction.*
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +19,7 @@ class HomeViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
 
-    fun onEvent(event: HomeUiEvent) = viewModelScope.launch(Dispatchers.IO) {
+    fun onEvent(event: HomeUiEvent) {
         when (event) {
             is HomeUiEvent.OnButtonActionClick -> processAction(event.action)
             is HomeUiEvent.UpdateTextFieldValue -> updateTextFieldValue(event.value)
@@ -31,94 +27,117 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private suspend fun processAction(action: ButtonAction) {
+    private fun processAction(action: ButtonAction) {
         when (action) {
-            is Button0, Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, ButtonDot, ButtonPercent, ButtonDivide, ButtonMultiply, ButtonMinus, ButtonPlus, ButtonSquareRoot, ButtonPI, ButtonPower, ButtonFactorial, ButtonSin, ButtonCos, ButtonTan, ButtonLog, ButtonLn, ButtonExp -> addActionValueToExpression(action)
-            is ButtonEqual -> addResultToExpression()
+            is ButtonAngle -> changeAngleType()
+            is ButtonInverse -> changeInverse()
+            is ButtonEqual -> replaceResultInExpression()
             is ButtonClear -> clearExpression()
             is ButtonParentheses -> addParentheses()
             is ButtonRemove -> removeDigit()
+            Button0, Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, ButtonDot, ButtonPercent, ButtonDivide, ButtonMultiply, ButtonMinus, ButtonPlus, is ButtonSquareRoot, ButtonPI, ButtonPower, ButtonFactorial, is ButtonSin, is ButtonCos, is ButtonTan, is ButtonLog, ButtonLn, ButtonExp -> addActionValueToExpression(action)
         }
     }
 
-    private suspend fun addActionValueToExpression(
-        action: ButtonAction
-    ) {
-        val currentExpression = uiState.first().currentExpression
-        val newCursorPosition = when (action) {
-            is ButtonLog, ButtonLn, ButtonSquareRoot -> currentExpression.selection.start + action.value.length + 1
-            else -> currentExpression.selection.start + action.value.length
-        }
-
-        val newExpression = expressionUtil.addActionValueToExpression(action, currentExpression)
-        calculateExpression(
-            currentExpression.copy(
-                text = newExpression,
-                selection = TextRange(newCursorPosition, newCursorPosition)
-            )
-        )
-    }
-
-    private fun calculateExpression(
-        newExpression: TextFieldValue
-    ) {
-        val result = expressionUtil.calculateExpression(newExpression.text)
-        updateUiState(newExpression, result)
-    }
-
-    private fun updateUiState(
-        currentExpression: TextFieldValue,
-        result: String
-    ) {
+    private fun changeAngleType() {
         _uiState.update { state ->
-            state.copy(
-                currentExpression = currentExpression,
+            state.copy(angleType = state.angleType.next())
+        }
+    }
+
+    private fun changeInverse() {
+        _uiState.update { state ->
+            state.copy(isInverse = !state.isInverse)
+        }
+    }
+
+    private fun addActionValueToExpression(action: ButtonAction) {
+        _uiState.update { currentState ->
+            val currentExpression = currentState.currentExpression
+            val newExpression = expressionUtil.addActionValueToExpression(action, currentExpression)
+
+            val newCursorPosition = when (action) {
+                is ButtonLog, is ButtonLn, is ButtonSquareRoot -> currentExpression.selection.start + action.value.length + 1
+                else -> currentExpression.selection.start + action.value.length
+            }
+
+            // Solve the new expression
+            val result = expressionUtil.calculateExpression(newExpression)
+
+            currentState.copy(
+                currentExpression = TextFieldValue(
+                    text = newExpression,
+                    selection = TextRange(newCursorPosition, newCursorPosition)
+                ),
                 result = result
             )
         }
     }
 
     private fun clearExpression() {
-        updateUiState(TextFieldValue(""), "")
-    }
-
-    private suspend fun addResultToExpression() {
-        val currentUiState = uiState.first()
-        updateUiState(TextFieldValue(currentUiState.result), currentUiState.result)
-    }
-
-    private suspend fun removeDigit() {
-        val currentExpression = uiState.first().currentExpression
-
-        val newExpression = expressionUtil.removeDigit(currentExpression)
-        val newCursorPosition = currentExpression.selection.start - 1
-
-        calculateExpression(
-            currentExpression.copy(
-                text = newExpression,
-                selection = if (newCursorPosition < 0) TextRange.Zero else TextRange(newCursorPosition, newCursorPosition)
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentExpression = TextFieldValue(""),
+                result = ""
             )
-        )
+        }
     }
 
-    private suspend fun addParentheses() {
-        val currentExpression = uiState.first().currentExpression
-        val newCursorPosition = currentExpression.selection.start + 1
-
-        val newExpression = expressionUtil.addParentheses(currentExpression)
-        calculateExpression(
-            currentExpression.copy(
-                text = newExpression,
-                selection = TextRange(newCursorPosition, newCursorPosition)
+    /**
+     * Replace the current expression with the result and set the cursor at the end of the expression
+     */
+    private fun replaceResultInExpression() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                currentExpression = TextFieldValue(
+                    text = currentState.result,
+                    // Set the cursor at the end of the expression
+                    selection = TextRange(currentState.result.length)
+                )
             )
-        )
+        }
     }
 
-    private fun updateTextFieldValue(
-        value: TextFieldValue
-    ) {
-        val result = expressionUtil.calculateExpression(value.text)
-        updateUiState(value, result)
+    private fun removeDigit() {
+        _uiState.update { currentState ->
+            val currentExpression = currentState.currentExpression
+            val newExpression = expressionUtil.removeDigit(currentExpression)
+
+            // Solve the new expression
+            val result = expressionUtil.calculateExpression(newExpression.text)
+
+            currentState.copy(
+                currentExpression = newExpression,
+                result = result
+            )
+        }
+    }
+
+    private fun addParentheses() {
+        _uiState.update { uiState ->
+            val currentExpression = uiState.currentExpression
+            // val newCursorPosition = currentExpression.selection.start + 1
+
+            val newExpression = expressionUtil.addParentheses(currentExpression)
+
+            val result = expressionUtil.calculateExpression(newExpression.text)
+
+            uiState.copy(
+                currentExpression = newExpression,
+                result = result
+            )
+        }
+    }
+
+    private fun updateTextFieldValue(value: TextFieldValue) {
+        _uiState.update { state ->
+            val result = expressionUtil.calculateExpression(value.text)
+
+            state.copy(
+                currentExpression = value,
+                result = result
+            )
+        }
     }
 
     private fun changeMoreActionsState() {

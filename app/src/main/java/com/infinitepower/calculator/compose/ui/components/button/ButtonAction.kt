@@ -4,9 +4,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.ReadOnlyComposable
 import androidx.compose.ui.graphics.Color
+import com.infinitepower.calculator.compose.core.AngleType
 
 sealed class ButtonAction(
-    val value: String
+    val displayText: String,
+    val value: String = displayText
 ) {
     companion object {
         private val colorSurface: Color
@@ -32,104 +34,129 @@ sealed class ButtonAction(
         @Composable
         @ReadOnlyComposable
         fun ButtonAction.getColorByButton(): Color = when (this) {
-            is Button0, Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, ButtonDot, ButtonRemove, ButtonSquareRoot, ButtonPI, ButtonPower, ButtonFactorial, ButtonSin, ButtonCos, ButtonTan, ButtonLog, ButtonLn, ButtonExp, -> colorSurface
             is ButtonParentheses, ButtonPercent, ButtonDivide, ButtonMultiply, ButtonMinus, ButtonPlus -> colorPrimary
             is ButtonEqual -> colorPrimaryContainer
             is ButtonClear -> colorTertiaryContainer
+            else -> colorSurface
         }
 
-        fun getAllPrimaryButtons(
-            isPortrait: Boolean
-        ): List<ButtonAction> = if (isPortrait) {
-            listOf(
-                ButtonClear,
-                ButtonParentheses,
-                ButtonPercent,
-                ButtonDivide,
-                Button7,
-                Button8,
-                Button9,
-                ButtonMultiply,
-                Button4,
-                Button5,
-                Button6,
-                ButtonMinus,
-                Button1,
-                Button2,
-                Button3,
-                ButtonPlus,
-                Button0,
-                ButtonDot,
-                ButtonRemove,
-                ButtonEqual
-            )
-        } else {
-            listOf(
-                Button7,
-                Button8,
-                Button9,
-                ButtonDivide,
-                ButtonClear,
-                Button4,
-                Button5,
-                Button6,
-                ButtonMultiply,
-                ButtonParentheses,
-                Button1,
-                Button2,
-                Button3,
-                ButtonMinus,
-                ButtonPercent,
-                Button0,
-                ButtonDot,
-                ButtonRemove,
-                ButtonPlus,
-                ButtonEqual
-            )
-        }
+        fun getAllPrimaryButtons(isPortrait: Boolean): List<ButtonAction> = listOf(
+            ButtonClear,
+            ButtonParentheses,
+            ButtonPercent,
+            ButtonDivide,
+            Button7,
+            Button8,
+            Button9,
+            ButtonMultiply,
+            Button4,
+            Button5,
+            Button6,
+            ButtonMinus,
+            Button1,
+            Button2,
+            Button3,
+            ButtonPlus,
+            Button0,
+            ButtonDot,
+            ButtonRemove,
+            ButtonEqual
+        )
 
-        fun getAllSecondaryButtons(): List<ButtonAction> = listOf(
-            ButtonSquareRoot,
+        fun getAllSecondaryButtons(
+            angleType: AngleType,
+            isInverse: Boolean
+        ): List<ButtonAction> = listOf(
+            ButtonSquareRoot(isInverse),
             ButtonPI,
             ButtonPower,
             ButtonFactorial,
-            ButtonLog,
-            ButtonLn,
+            ButtonAngle(angleType),
+            ButtonSin(isInverse),
+            ButtonCos(isInverse),
+            ButtonTan(isInverse),
+            ButtonInverse,
             ButtonExp,
+            ButtonLn,
+            ButtonLog(isInverse)
         )
     }
 
-    data object Button0 : ButtonAction(value = "0")
-    data object Button1 : ButtonAction(value = "1")
-    data object Button2 : ButtonAction(value = "2")
-    data object Button3 : ButtonAction(value = "3")
-    data object Button4 : ButtonAction(value = "4")
-    data object Button5 : ButtonAction(value = "5")
-    data object Button6 : ButtonAction(value = "6")
-    data object Button7 : ButtonAction(value = "7")
-    data object Button8 : ButtonAction(value = "8")
-    data object Button9 : ButtonAction(value = "9")
+    interface Invertible {
+        val isInverted: Boolean
+    }
 
-    data object ButtonDot : ButtonAction(value = ".")
-    data object ButtonEqual : ButtonAction(value = "=")
-    data object ButtonPlus : ButtonAction(value = "+")
-    data object ButtonMinus : ButtonAction(value = "-")
-    data object ButtonMultiply : ButtonAction(value = "*")
-    data object ButtonDivide : ButtonAction(value = "/")
-    data object ButtonPercent : ButtonAction(value = "%")
+    data object Button0 : ButtonAction(displayText = "0")
+    data object Button1 : ButtonAction(displayText = "1")
+    data object Button2 : ButtonAction(displayText = "2")
+    data object Button3 : ButtonAction(displayText = "3")
+    data object Button4 : ButtonAction(displayText = "4")
+    data object Button5 : ButtonAction(displayText = "5")
+    data object Button6 : ButtonAction(displayText = "6")
+    data object Button7 : ButtonAction(displayText = "7")
+    data object Button8 : ButtonAction(displayText = "8")
+    data object Button9 : ButtonAction(displayText = "9")
 
-    data object ButtonClear : ButtonAction(value = "AC")
-    data object ButtonRemove : ButtonAction(value = "⌫")
-    data object ButtonParentheses : ButtonAction(value = "( )")
+    data object ButtonDot : ButtonAction(displayText = ".")
+    data object ButtonEqual : ButtonAction(displayText = "=")
+    data object ButtonPlus : ButtonAction(displayText = "+")
+    data object ButtonMinus : ButtonAction(displayText = "-")
+    data object ButtonMultiply : ButtonAction(displayText = "*")
+    data object ButtonDivide : ButtonAction(displayText = "/")
+    data object ButtonPercent : ButtonAction(displayText = "%")
 
-    data object ButtonSquareRoot : ButtonAction(value = "√")
-    data object ButtonPI : ButtonAction(value = "π")
-    data object ButtonPower : ButtonAction(value = "^")
-    data object ButtonFactorial : ButtonAction(value = "!")
-    data object ButtonSin : ButtonAction(value = "sin")
-    data object ButtonCos : ButtonAction(value = "cos")
-    data object ButtonTan : ButtonAction(value = "tan")
-    data object ButtonLog : ButtonAction(value = "log")
-    data object ButtonLn : ButtonAction(value = "ln")
-    data object ButtonExp : ButtonAction(value = "e")
+    data object ButtonClear : ButtonAction(displayText = "AC")
+    data object ButtonRemove : ButtonAction(displayText = "⌫")
+    data object ButtonParentheses : ButtonAction(displayText = "( )")
+
+    data class ButtonSquareRoot(
+        override val isInverted: Boolean
+    ) : ButtonAction(
+        displayText = if (isInverted) "x²" else "√",
+        value = if (isInverted) "^2" else "√"
+    ), Invertible
+    data object ButtonPI : ButtonAction(displayText = "π")
+    data object ButtonPower : ButtonAction(displayText = "^")
+    data object ButtonFactorial : ButtonAction(displayText = "!")
+
+    data class ButtonAngle(
+        val angleType: AngleType
+    ) : ButtonAction(displayText = angleType.name)
+
+    data object ButtonInverse : ButtonAction(displayText = "INV")
+
+    data class ButtonSin(
+        override val isInverted: Boolean,
+    ) : ButtonAction(
+        displayText = if (isInverted) "sin⁻¹" else "sin",
+        value = if (isInverted) "sin⁻¹(" else "sin("
+    ), Invertible
+
+    data class ButtonCos(
+        override val isInverted: Boolean = false
+    ) : ButtonAction(
+        displayText = if (isInverted) "cos⁻¹" else "cos",
+        value = if (isInverted) "cos⁻¹(" else "cos("
+    ), Invertible
+
+    data class ButtonTan(
+        override val isInverted: Boolean = false
+    ) : ButtonAction(
+        displayText = if (isInverted) "tan⁻¹" else "tan",
+        value = if (isInverted) "tan⁻¹(" else "tan("
+    ), Invertible
+
+    data class ButtonLog(
+        override val isInverted: Boolean
+    ) : ButtonAction(
+        displayText = if (isInverted) "10^" else "log",
+        value = if (isInverted) "10^" else "log("
+    ), Invertible
+
+    data object ButtonLn : ButtonAction(
+        displayText = "ln",
+        value = "ln("
+    )
+
+    data object ButtonExp : ButtonAction(displayText = "e")
 }

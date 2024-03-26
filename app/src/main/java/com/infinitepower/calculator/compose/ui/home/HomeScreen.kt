@@ -96,11 +96,13 @@ private fun HomePortraitContent(
             SecondaryButtonGrid(
                 modifier = Modifier.fillMaxWidth(),
                 isPortrait = true,
+                buttonGridExpanded = uiState.moreActionsExpanded,
+                angleType = uiState.angleType,
+                isInverse = uiState.isInverse,
                 onActionClick = { action ->
                     onEvent(HomeUiEvent.OnButtonActionClick(action))
                 },
-                onMoreActionsClick = { onEvent(HomeUiEvent.OnChangeMoreActionsClick) },
-                buttonGridExpanded = uiState.moreActionsExpanded
+                onMoreActionsClick = { onEvent(HomeUiEvent.OnChangeMoreActionsClick) }
             )
             ButtonGrid(
                 modifier = Modifier.fillMaxWidth(),
@@ -137,6 +139,8 @@ private fun HomeLandscapeContent(
             SecondaryButtonGrid(
                 modifier = Modifier.weight(1f),
                 isPortrait = false,
+                angleType = uiState.angleType,
+                isInverse = uiState.isInverse,
                 onActionClick = { action ->
                     onEvent(HomeUiEvent.OnButtonActionClick(action))
                 },

@@ -70,4 +70,12 @@ dependencies {
     implementation(libs.androidx.compose.material.iconsExtended)
 
     implementation(libs.androidx.constraintlayout.compose)
+
+    testImplementation(kotlin("test"))
+    testImplementation(libs.assertk)
+    testImplementation(libs.junit.jupiter.params)
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }

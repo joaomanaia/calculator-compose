@@ -4,34 +4,53 @@ import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import com.infinitepower.calculator.compose.core.evaluator.Expressions
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
-import com.infinitepower.calculator.compose.ui.components.button.ButtonAction.*
 
 class ExpressionUtilImpl(
     private val expressions: Expressions
 ) : ExpressionUtil {
-    override fun addParentheses(
-        currentExpression: TextFieldValue,
-    ): String {
+    companion object {
+        private val functions = setOf("sin", "sin⁻¹", "cos", "cos⁻¹", "tan", "tan⁻¹", "log", "ln")
+    }
+
+    override fun addParentheses(currentExpression: TextFieldValue): TextFieldValue {
         val currentExpressionText = currentExpression.text
-        val cursorPosition = currentExpression.selection.start - 1
+
+        // If there is a selection, add parentheses around the selected text
+        if (currentExpression.selection.length > 0) {
+            // Get the selected text
+            val selectedText = currentExpressionText.substring(
+                currentExpression.selection.start,
+                currentExpression.selection.end
+            )
+
+            return currentExpression.copy(
+                // Replace selected text with parentheses around it
+                text = currentExpression.text.replace(selectedText, "($selectedText)"),
+                selection = TextRange(currentExpression.selection.end + 2)
+            )
+        }
 
         val openParenthesesNum = currentExpressionText.count { it == '(' }
         val closeParenthesesNum = currentExpressionText.count { it == ')' }
 
-        val digitNumberOrCloseParenthesesOrExpOrPi = currentExpressionText
-            .getOrNull(cursorPosition)
-            ?.digitToIntOrNull() != null
-                || currentExpressionText.getOrNull(cursorPosition) == ')'
-                || currentExpressionText.getOrNull(cursorPosition) == 'e'
-                || currentExpressionText.getOrNull(cursorPosition) == 'π'
+        val previousChar = currentExpressionText.getOrNull(currentExpression.selection.start - 1)
 
-        val newExpression = when {
-            openParenthesesNum == (closeParenthesesNum + 1) && digitNumberOrCloseParenthesesOrExpOrPi -> ")"
-            openParenthesesNum > closeParenthesesNum && digitNumberOrCloseParenthesesOrExpOrPi -> ")"
-            else -> "("
-        }
+        // Check if previous character is a digit, close parentheses, e or π
+        // If true, add close parentheses
+        val shouldAddCloseParentheses = previousChar?.digitToIntOrNull() != null
+                || previousChar == ')'
+                || previousChar == 'e'
+                || previousChar == 'π'
 
-        return addItemToExpression(newExpression, currentExpression)
+        val newExpression =
+            if (openParenthesesNum > closeParenthesesNum && shouldAddCloseParentheses) ")" else "("
+
+        val newCursorPosition = currentExpression.selection.start + 1
+
+        return currentExpression.copy(
+            text = addItemToExpression(newExpression, currentExpression),
+            selection = TextRange(newCursorPosition)
+        )
     }
 
     override fun calculateExpression(expression: String): String = try {
@@ -40,35 +59,56 @@ class ExpressionUtilImpl(
         ""
     }
 
-    /**
-     * Removes last digit if last digit of expression has spaces remove this spaces too
-     */
-    override fun removeDigit(expression: TextFieldValue): String {
-        if (expression.text.isBlank()) return ""
+    override fun removeDigit(expression: TextFieldValue): TextFieldValue {
+        if (expression.text.isBlank()) return expression
 
-        val expressionSelection = expression.selection
-        val selectionRange = expression.selection.toIntRange()
+        val selection = expression.selection
 
-        val removeRange = if (expressionSelection.start == expressionSelection.end) {
-            (expressionSelection.start - 1) until expressionSelection.start
-        } else selectionRange
+        // If there is no selection and the cursor is at the beginning of the expression, return the expression as is
+        if (selection.collapsed && selection.start == 0) return expression
 
-        return expression.text.removeRange(removeRange)
+        val removeRange = if (selection.collapsed) {
+            // If there is no selection, remove the character before the cursor
+            selection.start - 1 until selection.start
+        } else {
+            // If there is a selection, remove the selected text
+            selection.start until selection.end
+        }
+
+        val textSelected = expression.text.substring(removeRange)
+        val textBeforeCursor = expression.text.substring(0, removeRange.first)
+
+        functions.forEach { function ->
+            if (textSelected in function || textBeforeCursor.endsWith(function)) {
+                // Remove the function if the cursor is inside it
+                val functionStartIndex = expression.text.lastIndexOf(function, removeRange.first)
+
+                if (functionStartIndex != -1) {
+                    // Check if the function has parentheses at the end
+                    val hasParentheses = expression.text.getOrNull(functionStartIndex + function.length) == '('
+                    val endIndex = if (hasParentheses) functionStartIndex + function.length + 1 else functionStartIndex + function.length
+
+                    return expression.copy(
+                        text = expression.text.removeRange(
+                            startIndex = functionStartIndex,
+                            endIndex = endIndex
+                        ),
+                        selection = TextRange(removeRange.first)
+                    )
+                }
+            }
+        }
+
+        return expression.copy(
+            text = expression.text.removeRange(removeRange),
+            selection = TextRange(removeRange.first)
+        )
     }
-
-    private fun TextRange.toIntRange() = (this.start until this.end)
 
     override fun addActionValueToExpression(
         action: ButtonAction,
         currentExpression: TextFieldValue
-    ): String {
-        val newItem = when (action) {
-            is ButtonLog, ButtonLn, ButtonSquareRoot -> "${action.value}("
-            else -> action.value
-        }
-
-        return addItemToExpression(newItem, currentExpression)
-    }
+    ): String = addItemToExpression(action.value, currentExpression)
 
     private fun addItemToExpression(
         item: String,
