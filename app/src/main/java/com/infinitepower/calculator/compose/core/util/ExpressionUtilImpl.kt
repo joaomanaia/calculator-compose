@@ -2,14 +2,19 @@ package com.infinitepower.calculator.compose.core.util
 
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
+import com.infinitepower.calculator.compose.core.AngleType
 import com.infinitepower.calculator.compose.core.evaluator.Expressions
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class ExpressionUtilImpl(
+@Singleton
+internal class ExpressionUtilImpl @Inject constructor(
     private val expressions: Expressions
 ) : ExpressionUtil {
     companion object {
-        private val functions = setOf("sin", "sin⁻¹", "cos", "cos⁻¹", "tan", "tan⁻¹", "log", "ln")
+        val angleFunctions = setOf("sin", "sin⁻¹", "cos", "cos⁻¹", "tan", "tan⁻¹")
+        private val functions = angleFunctions + setOf("log", "ln")
     }
 
     override fun addParentheses(currentExpression: TextFieldValue): TextFieldValue {
@@ -54,7 +59,7 @@ class ExpressionUtilImpl(
     }
 
     override fun calculateExpression(expression: String): String = try {
-        expressions.eval(expression).toString()
+        expressions.evalToString(expression)
     } catch (e: Throwable) {
         ""
     }
@@ -85,8 +90,10 @@ class ExpressionUtilImpl(
 
                 if (functionStartIndex != -1) {
                     // Check if the function has parentheses at the end
-                    val hasParentheses = expression.text.getOrNull(functionStartIndex + function.length) == '('
-                    val endIndex = if (hasParentheses) functionStartIndex + function.length + 1 else functionStartIndex + function.length
+                    val hasParentheses =
+                        expression.text.getOrNull(functionStartIndex + function.length) == '('
+                    val endIndex =
+                        if (hasParentheses) functionStartIndex + function.length + 1 else functionStartIndex + function.length
 
                     return expression.copy(
                         text = expression.text.removeRange(
@@ -108,7 +115,14 @@ class ExpressionUtilImpl(
     override fun addActionValueToExpression(
         action: ButtonAction,
         currentExpression: TextFieldValue
-    ): String = addItemToExpression(action.value, currentExpression)
+    ): TextFieldValue {
+        val actionValue = action.value
+
+        return currentExpression.copy(
+            text = addItemToExpression(actionValue, currentExpression),
+            selection = TextRange(currentExpression.selection.start + actionValue.length)
+        )
+    }
 
     private fun addItemToExpression(
         item: String,
@@ -117,5 +131,9 @@ class ExpressionUtilImpl(
         val positionToAdd = currentExpression.selection.start
 
         return currentExpression.text.replaceRange(positionToAdd, positionToAdd, item)
+    }
+
+    override fun changeAngleMode(newMode: AngleType) {
+        expressions.changeAngleFunctions(newMode)
     }
 }

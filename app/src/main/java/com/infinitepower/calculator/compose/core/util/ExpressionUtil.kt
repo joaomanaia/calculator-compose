@@ -1,6 +1,7 @@
 package com.infinitepower.calculator.compose.core.util
 
 import androidx.compose.ui.text.input.TextFieldValue
+import com.infinitepower.calculator.compose.core.AngleType
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
 
 interface ExpressionUtil {
@@ -13,5 +14,7 @@ interface ExpressionUtil {
     fun addActionValueToExpression(
         action: ButtonAction,
         currentExpression: TextFieldValue
-    ): String
+    ): TextFieldValue
+
+    fun changeAngleMode(newMode: AngleType)
 }

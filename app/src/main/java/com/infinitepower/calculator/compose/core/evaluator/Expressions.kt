@@ -1,18 +1,32 @@
 package com.infinitepower.calculator.compose.core.evaluator
 
+import com.infinitepower.calculator.compose.core.AngleType
 import com.infinitepower.calculator.compose.core.evaluator.internal.*
 import com.infinitepower.calculator.compose.core.evaluator.internal.Function
 import java.math.BigDecimal
 import java.math.MathContext
 import java.math.RoundingMode
+import javax.inject.Inject
+import javax.inject.Singleton
+import kotlin.math.acos
+import kotlin.math.asin
+import kotlin.math.atan
+import kotlin.math.cos
 import kotlin.math.log
 import kotlin.math.log10
+import kotlin.math.sin
 import kotlin.math.sqrt
+import kotlin.math.tan
 
 class ExpressionException(message: String) : RuntimeException(message)
 
-class Expressions {
-    private val evaluator = Evaluator()
+@Singleton
+internal class Expressions @Inject constructor(
+    private val evaluator: Evaluator
+) {
+    companion object {
+        val DEFAULT_ANGLE_TYPE = AngleType.DEG
+    }
 
     init {
         define("π", Math.PI)
@@ -39,6 +53,86 @@ class Expressions {
                 if (arguments.size != 1) throw ExpressionException("square root requires one argument")
 
                 return sqrt(arguments.first().toDouble()).toBigDecimal()
+            }
+        })
+
+        changeAngleFunctions(DEFAULT_ANGLE_TYPE)
+    }
+
+    fun changeAngleFunctions(angleType: AngleType) {
+        evaluator.replaceFunction("sin", object : Function() {
+            override fun call(arguments: List<BigDecimal>): BigDecimal {
+                if (arguments.size != 1) throw ExpressionException("sin requires one argument")
+
+                if (angleType == AngleType.DEG) {
+                    return sin(
+                        Math.toRadians(
+                            arguments.first().toDouble()
+                        )
+                    ).toBigDecimal(evaluator.mathContext)
+                }
+
+                return sin(arguments.first().toDouble()).toBigDecimal(evaluator.mathContext)
+            }
+        })
+
+        evaluator.replaceFunction("asin", object : Function() {
+            override fun call(arguments: List<BigDecimal>): BigDecimal {
+                if (arguments.size != 1) throw ExpressionException("asin requires one argument")
+
+                if (angleType == AngleType.DEG) {
+                    return Math.toDegrees(asin(arguments.first().toDouble())).toBigDecimal()
+                }
+
+                return asin(arguments.first().toDouble()).toBigDecimal()
+            }
+        })
+
+        evaluator.replaceFunction("cos", object : Function() {
+            override fun call(arguments: List<BigDecimal>): BigDecimal {
+                if (arguments.size != 1) throw ExpressionException("cos requires one argument")
+
+                if (angleType == AngleType.DEG) {
+                    return cos(Math.toRadians(arguments.first().toDouble())).toBigDecimal()
+                }
+
+                return cos(arguments.first().toDouble()).toBigDecimal()
+            }
+        })
+
+        evaluator.replaceFunction("acos", object : Function() {
+            override fun call(arguments: List<BigDecimal>): BigDecimal {
+                if (arguments.size != 1) throw ExpressionException("acos requires one argument")
+
+                if (angleType == AngleType.DEG) {
+                    return Math.toDegrees(acos(arguments.first().toDouble())).toBigDecimal()
+                }
+
+                return acos(arguments.first().toDouble()).toBigDecimal()
+            }
+        })
+
+        evaluator.replaceFunction("tan", object : Function() {
+            override fun call(arguments: List<BigDecimal>): BigDecimal {
+                if (arguments.size != 1) throw ExpressionException("tan requires one argument")
+
+                if (angleType == AngleType.DEG) {
+                    return tan(Math.toRadians(arguments.first().toDouble())).toBigDecimal()
+                }
+
+                return tan(arguments.first().toDouble()).toBigDecimal()
+            }
+        })
+
+        evaluator.replaceFunction("atan", object : Function() {
+            override fun call(arguments: List<BigDecimal>): BigDecimal {
+                if (arguments.size != 1) throw ExpressionException("atan requires one argument")
+
+                if (angleType == AngleType.DEG) {
+                    return Math.toDegrees(atan(arguments.first().toDouble())).toBigDecimal()
+                }
+
+                return atan(arguments.first().toDouble()).toBigDecimal()
             }
         })
     }
@@ -114,10 +208,14 @@ class Expressions {
      */
     fun evalToString(expression: String): String {
         return try {
-            evaluator.eval(parse(expression)).round(evaluator.mathContext).stripTrailingZeros()
-                .toEngineeringString()
+            evaluator
+                .eval(parse(expression))
+                .round(evaluator.mathContext)
+                .stripTrailingZeros()
+                .toPlainString()
         } catch (e: Throwable) {
-            e.cause?.message ?: e.message ?: "unknown error"
+            // e.cause?.message ?: e.message ?: "unknown error"
+            ""
         }
     }
 

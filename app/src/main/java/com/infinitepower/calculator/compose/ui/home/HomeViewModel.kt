@@ -3,12 +3,17 @@ package com.infinitepower.calculator.compose.ui.home
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.infinitepower.calculator.compose.core.util.ExpressionUtil
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction.*
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
@@ -18,6 +23,17 @@ class HomeViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = _uiState.asStateFlow()
+
+    val result = _uiState
+        .distinctUntilChanged { old, new ->
+            old.currentExpression.text == new.currentExpression.text && old.angleType == new.angleType
+        }.map { state ->
+            expressionUtil.calculateExpression(state.currentExpression.text)
+        }.stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = ""
+        )
 
     fun onEvent(event: HomeUiEvent) {
         when (event) {
@@ -35,13 +51,16 @@ class HomeViewModel @Inject constructor(
             is ButtonClear -> clearExpression()
             is ButtonParentheses -> addParentheses()
             is ButtonRemove -> removeDigit()
-            Button0, Button1, Button2, Button3, Button4, Button5, Button6, Button7, Button8, Button9, ButtonDot, ButtonPercent, ButtonDivide, ButtonMultiply, ButtonMinus, ButtonPlus, is ButtonSquareRoot, ButtonPI, ButtonPower, ButtonFactorial, is ButtonSin, is ButtonCos, is ButtonTan, is ButtonLog, ButtonLn, ButtonExp -> addActionValueToExpression(action)
+            else -> addActionValueToExpression(action)
         }
     }
 
     private fun changeAngleType() {
         _uiState.update { state ->
-            state.copy(angleType = state.angleType.next())
+            val newAngleType = state.angleType.next()
+            expressionUtil.changeAngleMode(newAngleType)
+
+            state.copy(angleType = newAngleType)
         }
     }
 
@@ -56,30 +75,13 @@ class HomeViewModel @Inject constructor(
             val currentExpression = currentState.currentExpression
             val newExpression = expressionUtil.addActionValueToExpression(action, currentExpression)
 
-            val newCursorPosition = when (action) {
-                is ButtonLog, is ButtonLn, is ButtonSquareRoot -> currentExpression.selection.start + action.value.length + 1
-                else -> currentExpression.selection.start + action.value.length
-            }
-
-            // Solve the new expression
-            val result = expressionUtil.calculateExpression(newExpression)
-
-            currentState.copy(
-                currentExpression = TextFieldValue(
-                    text = newExpression,
-                    selection = TextRange(newCursorPosition, newCursorPosition)
-                ),
-                result = result
-            )
+            currentState.copy(currentExpression = newExpression)
         }
     }
 
     private fun clearExpression() {
         _uiState.update { currentState ->
-            currentState.copy(
-                currentExpression = TextFieldValue(""),
-                result = ""
-            )
+            currentState.copy(currentExpression = TextFieldValue())
         }
     }
 
@@ -88,11 +90,13 @@ class HomeViewModel @Inject constructor(
      */
     private fun replaceResultInExpression() {
         _uiState.update { currentState ->
+            val result = expressionUtil.calculateExpression(currentState.currentExpression.text)
+
             currentState.copy(
                 currentExpression = TextFieldValue(
-                    text = currentState.result,
+                    text = result,
                     // Set the cursor at the end of the expression
-                    selection = TextRange(currentState.result.length)
+                    selection = TextRange(result.length)
                 )
             )
         }
@@ -103,40 +107,22 @@ class HomeViewModel @Inject constructor(
             val currentExpression = currentState.currentExpression
             val newExpression = expressionUtil.removeDigit(currentExpression)
 
-            // Solve the new expression
-            val result = expressionUtil.calculateExpression(newExpression.text)
-
-            currentState.copy(
-                currentExpression = newExpression,
-                result = result
-            )
+            currentState.copy(currentExpression = newExpression)
         }
     }
 
     private fun addParentheses() {
         _uiState.update { uiState ->
             val currentExpression = uiState.currentExpression
-            // val newCursorPosition = currentExpression.selection.start + 1
-
             val newExpression = expressionUtil.addParentheses(currentExpression)
 
-            val result = expressionUtil.calculateExpression(newExpression.text)
-
-            uiState.copy(
-                currentExpression = newExpression,
-                result = result
-            )
+            uiState.copy(currentExpression = newExpression)
         }
     }
 
     private fun updateTextFieldValue(value: TextFieldValue) {
         _uiState.update { state ->
-            val result = expressionUtil.calculateExpression(value.text)
-
-            state.copy(
-                currentExpression = value,
-                result = result
-            )
+            state.copy(currentExpression = value)
         }
     }
 

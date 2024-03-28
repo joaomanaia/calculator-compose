@@ -24,9 +24,11 @@ internal fun HomeScreen(
     homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
+    val result by homeViewModel.result.collectAsState()
 
     HomeScreenImpl(
         uiState = uiState,
+        result = result,
         onEvent = homeViewModel::onEvent
     )
 }
@@ -34,6 +36,7 @@ internal fun HomeScreen(
 @Composable
 fun HomeScreenImpl(
     uiState: HomeUiState,
+    result: String,
     onEvent: (event: HomeUiEvent) -> Unit
 ) {
     val localConfiguration = LocalConfiguration.current
@@ -46,11 +49,13 @@ fun HomeScreenImpl(
         if (isPortrait) {
             HomePortraitContent(
                 uiState = uiState,
+                result = result,
                 onEvent = onEvent
             )
         } else {
             HomeLandscapeContent(
                 uiState = uiState,
+                result = result,
                 onEvent = onEvent
             )
         }
@@ -60,6 +65,7 @@ fun HomeScreenImpl(
 @Composable
 private fun HomePortraitContent(
     uiState: HomeUiState,
+    result: String,
     onEvent: (event: HomeUiEvent) -> Unit
 ) {
     ConstraintLayout(
@@ -78,7 +84,8 @@ private fun HomePortraitContent(
             },
             isPortrait = true,
             currentExpression = uiState.currentExpression,
-            result = uiState.result,
+            result = result,
+            angleType = uiState.angleType,
             updateTextFieldValue = { value ->
                 onEvent(HomeUiEvent.UpdateTextFieldValue(value))
             }
@@ -118,6 +125,7 @@ private fun HomePortraitContent(
 @Composable
 private fun HomeLandscapeContent(
     uiState: HomeUiState,
+    result: String,
     onEvent: (event: HomeUiEvent) -> Unit
 ) {
     Column {
@@ -125,7 +133,8 @@ private fun HomeLandscapeContent(
             modifier = Modifier.fillMaxWidth(),
             isPortrait = false,
             currentExpression = uiState.currentExpression,
-            result = uiState.result,
+            result = result,
+            angleType = uiState.angleType,
             updateTextFieldValue = { value ->
                 onEvent(HomeUiEvent.UpdateTextFieldValue(value))
             }
@@ -168,9 +177,9 @@ private fun HomeScreenPreview() {
             HomeScreenImpl(
                 uiState = HomeUiState(
                     currentExpression = TextFieldValue("22+1"),
-                    result = "23",
                     moreActionsExpanded = buttonGridExpanded
                 ),
+                result = "23",
                 onEvent = { event ->
                     when (event) {
                         is HomeUiEvent.OnChangeMoreActionsClick -> {

@@ -5,9 +5,12 @@ import java.math.BigDecimal
 import java.math.MathContext
 import com.infinitepower.calculator.compose.core.evaluator.internal.TokenType.*
 import java.math.RoundingMode
+import javax.inject.Inject
+import javax.inject.Singleton
 import kotlin.math.pow
 
-internal class Evaluator : ExprVisitor<BigDecimal> {
+@Singleton
+internal class Evaluator @Inject constructor() : ExprVisitor<BigDecimal> {
     internal var mathContext: MathContext = MathContext.DECIMAL64
 
     private val variables: LinkedHashMap<String, BigDecimal> = linkedMapOf()
@@ -25,6 +28,15 @@ internal class Evaluator : ExprVisitor<BigDecimal> {
     fun addFunction(name: String, function: Function): Evaluator {
         functions += name.lowercase() to function
         return this
+    }
+
+    fun removeFunction(name: String): Evaluator {
+        functions.remove(name.lowercase())
+        return this
+    }
+
+    fun replaceFunction(name: String, function: Function): Evaluator {
+        return this.removeFunction(name).addFunction(name, function)
     }
 
     fun eval(expr: Expr): BigDecimal {

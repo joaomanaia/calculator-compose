@@ -121,7 +121,7 @@ sealed class ButtonAction(
 
     data class ButtonAngle(
         val angleType: AngleType
-    ) : ButtonAction(displayText = angleType.name)
+    ) : ButtonAction(displayText = angleType.next().name)
 
     data object ButtonInverse : ButtonAction(displayText = "INV")
 
@@ -129,21 +129,21 @@ sealed class ButtonAction(
         override val isInverted: Boolean,
     ) : ButtonAction(
         displayText = if (isInverted) "sin⁻¹" else "sin",
-        value = if (isInverted) "sin⁻¹(" else "sin("
+        value = if (isInverted) "asin(" else "sin("
     ), Invertible
 
     data class ButtonCos(
         override val isInverted: Boolean = false
     ) : ButtonAction(
         displayText = if (isInverted) "cos⁻¹" else "cos",
-        value = if (isInverted) "cos⁻¹(" else "cos("
+        value = if (isInverted) "acos(" else "cos("
     ), Invertible
 
     data class ButtonTan(
         override val isInverted: Boolean = false
     ) : ButtonAction(
         displayText = if (isInverted) "tan⁻¹" else "tan",
-        value = if (isInverted) "tan⁻¹(" else "tan("
+        value = if (isInverted) "atan(" else "tan("
     ), Invertible
 
     data class ButtonLog(
