@@ -1,11 +1,11 @@
-package com.infinitepower.calculator.compose
+package me.joaomanaia.calculator.compose
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import com.infinitepower.calculator.compose.ui.home.HomeScreen
-import com.infinitepower.calculator.compose.ui.theme.CalculatorTheme
+import me.joaomanaia.calculator.compose.ui.theme.CalculatorTheme
 import dagger.hilt.android.AndroidEntryPoint
+import me.joaomanaia.calculator.compose.ui.home.HomeScreen
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {

@@ -1,4 +1,4 @@
-package com.infinitepower.calculator.compose
+package me.joaomanaia.calculator.compose
 
 import android.app.Application
 import dagger.hilt.android.HiltAndroidApp

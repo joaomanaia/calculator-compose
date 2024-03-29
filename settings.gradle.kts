@@ -13,5 +13,7 @@ dependencyResolutionManagement {
     }
 }
 
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
 rootProject.name = "Calculator"
-include(":app")
+include(":composeApp")

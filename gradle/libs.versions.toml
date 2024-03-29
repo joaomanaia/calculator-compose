@@ -1,5 +1,8 @@
 [versions]
 
+android-compileSdk = "34"
+android-minSdk = "24"
+android-targetSdk = "34"
 assertk = "0.28.0"
 androidxCoreKtx = "1.12.0"
 androidxActivity = "1.8.2"
@@ -8,11 +11,15 @@ androidxComposeCompiler = "1.5.10"
 androidxComposeBom = "2024.02.01"
 constraintlayoutCompose = "1.0.1"
 kotlin = "1.9.22"
+kotlinxCoroutines = "1.8.0"
 ksp = "1.9.22-1.0.18"
 hilt = "2.51"
 hiltExt = "1.2.0"
 googleMaterial = "1.11.0"
 junitJupiter = "5.10.2"
+jetbrainsCompose = "1.6.1"
+constraintlayoutComposeMultiplatform = "0.3.1"
+material3WindowSizeClassMultiplatform = "0.5.0"
 
 [libraries]
 
@@ -33,17 +40,22 @@ androidx-compose-ui-test = { group = "androidx.compose.ui", name = "ui-test-juni
 androidx-compose-ui-testManifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
 androidx-compose-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
 androidx-compose-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+constraintlayout-compose-multiplatform = { module = "tech.annexflow.compose:constraintlayout-compose-multiplatform", version.ref = "constraintlayoutComposeMultiplatform" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-navigationCompose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltExt" }
+kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "googleMaterial" }
 junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junitJupiter" }
+material3-windowSizeClass-multiplatform = { module = "dev.chrisbanes.material3:material3-window-size-class-multiplatform", version.ref = "material3WindowSizeClassMultiplatform" }
 
 [plugins]
 
 android-application = { id = "com.android.application", version.ref = "androidGradlePlugin" }
 android-library = { id = "com.android.library", version.ref = "androidGradlePlugin" }
-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-multiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "jetbrainsCompose" }
 dependencyUpdates = { id = "com.github.ben-manes.versions", version = "0.51.0" }
