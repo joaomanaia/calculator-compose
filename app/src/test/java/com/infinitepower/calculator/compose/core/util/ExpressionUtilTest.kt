@@ -5,6 +5,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import assertk.assertThat
 import assertk.assertions.isEqualTo
 import com.infinitepower.calculator.compose.core.evaluator.Expressions
+import com.infinitepower.calculator.compose.core.evaluator.internal.Evaluator
 import com.infinitepower.calculator.compose.ui.components.button.ButtonAction
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -16,7 +17,7 @@ class ExpressionUtilTest {
 
     @BeforeTest
     fun setup() {
-        val expressions = Expressions()
+        val expressions = Expressions(evaluator = Evaluator())
         expressionUtil = ExpressionUtilImpl(expressions)
     }
 
@@ -100,14 +101,14 @@ class ExpressionUtilTest {
     fun `add actions to expression test`() {
         val expression1 = basicTextField("")
         val newExpression1 = expressionUtil.addActionValueToExpression(ButtonAction.Button0, expression1)
-        assertThat(newExpression1).isEqualTo("0")
+        assertThat(newExpression1.text).isEqualTo("0")
 
         val expression2 = basicTextField("(")
         val newExpression2 = expressionUtil.addActionValueToExpression(ButtonAction.Button0, expression2)
-        assertThat(newExpression2).isEqualTo("(0")
+        assertThat(newExpression2.text).isEqualTo("(0")
 
         val expression3 = basicTextField("2+4")
         val newExpression3 = expressionUtil.addActionValueToExpression(ButtonAction.ButtonPlus, expression3)
-        assertThat(newExpression3).isEqualTo("2+4+")
+        assertThat(newExpression3.text).isEqualTo("2+4+")
     }
 }
