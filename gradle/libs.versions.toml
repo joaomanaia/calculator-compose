@@ -10,11 +10,13 @@ androidGradlePlugin = "8.3.1"
 androidxComposeCompiler = "1.5.10"
 androidxComposeBom = "2024.02.01"
 constraintlayoutCompose = "1.0.1"
+kmpViewmodelKoinCompose = "0.7.1"
 kotlin = "1.9.22"
 kotlinxCoroutines = "1.8.0"
 ksp = "1.9.22-1.0.18"
 hilt = "2.51"
 hiltExt = "1.2.0"
+koin-bom = "3.6.0-alpha3"
 googleMaterial = "1.11.0"
 junitJupiter = "5.10.2"
 jetbrainsCompose = "1.6.1"
@@ -44,8 +46,13 @@ constraintlayout-compose-multiplatform = { module = "tech.annexflow.compose:cons
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-navigationCompose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hiltExt" }
+kmp-viewmodel-koin-compose = { module = "io.github.hoc081098:kmp-viewmodel-koin-compose", version.ref = "kmpViewmodelKoinCompose" }
 kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
+kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinxCoroutines" }
+koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-core = { module = "io.insert-koin:koin-core" }
+koin-compose = { module = "io.insert-koin:koin-compose" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "googleMaterial" }
 junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junitJupiter" }
 material3-windowSizeClass-multiplatform = { module = "dev.chrisbanes.material3:material3-window-size-class-multiplatform", version.ref = "material3WindowSizeClassMultiplatform" }

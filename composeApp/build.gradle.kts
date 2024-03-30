@@ -1,3 +1,5 @@
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+
 plugins {
     kotlin("multiplatform")
     alias(libs.plugins.android.application)
@@ -15,7 +17,40 @@ kotlin {
         }
     }
 
+    jvm("desktop")
+
     sourceSets {
+        commonMain.dependencies {
+            implementation(compose.runtime)
+            implementation(compose.foundation)
+            implementation(compose.material3)
+            implementation(compose.ui)
+
+            implementation(project.dependencies.platform(libs.koin.bom))
+            implementation(libs.koin.core)
+            implementation(libs.koin.compose)
+
+            implementation(libs.constraintlayout.compose.multiplatform)
+
+            implementation(libs.kmp.viewmodel.koin.compose)
+        }
+
+        commonTest.dependencies {
+            implementation(compose.ui)
+
+            implementation(kotlin("test-junit5"))
+            implementation(libs.assertk)
+            implementation(libs.junit.jupiter.params)
+        }
+
+        val desktopMain by getting
+
+        desktopMain.dependencies {
+            implementation(compose.desktop.currentOs)
+
+            implementation(libs.kotlinx.coroutines.swing)
+        }
+
         androidMain.dependencies {
             implementation(libs.hilt.android)
             implementation(libs.hilt.navigationCompose)
@@ -23,11 +58,7 @@ kotlin {
             implementation(libs.kotlinx.coroutines.android)
 
             implementation(project.dependencies.enforcedPlatform(libs.androidx.compose.bom))
-            implementation(libs.androidx.compose.material3)
-            implementation(libs.androidx.compose.ui.tooling.preview)
             implementation(libs.androidx.activity.compose)
-
-            implementation(libs.androidx.constraintlayout.compose)
         }
     }
 }
@@ -71,5 +102,18 @@ android {
     }
     dependencies {
         debugImplementation(libs.androidx.compose.ui.tooling)
+        debugImplementation(libs.androidx.compose.ui.tooling.preview)
+    }
+}
+
+compose.desktop {
+    application {
+        mainClass = "MainKt"
+
+        nativeDistributions {
+            targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+            packageName = "Calculator"
+            packageVersion = "1.0.0"
+        }
     }
 }
