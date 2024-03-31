@@ -39,28 +39,57 @@ sealed class ButtonAction(
             else -> colorSurface
         }
 
-        fun getAllPrimaryButtons(isPortrait: Boolean): List<ButtonAction> = listOf(
-            ButtonClear,
-            ButtonParentheses,
-            ButtonPercent,
-            ButtonDivide,
-            Button7,
-            Button8,
-            Button9,
-            ButtonMultiply,
-            Button4,
-            Button5,
-            Button6,
-            ButtonMinus,
-            Button1,
-            Button2,
-            Button3,
-            ButtonPlus,
-            Button0,
-            ButtonDot,
-            ButtonRemove,
-            ButtonEqual
-        )
+        fun getAllPrimaryButtons(isPortrait: Boolean): List<ButtonAction> = if (isPortrait) {
+            listOf(
+                ButtonClear,
+                ButtonParentheses,
+                ButtonPercent,
+                ButtonDivide,
+                Button7,
+                Button8,
+                Button9,
+                ButtonMultiply,
+                Button4,
+                Button5,
+                Button6,
+                ButtonMinus,
+                Button1,
+                Button2,
+                Button3,
+                ButtonPlus,
+                Button0,
+                ButtonDot,
+                ButtonRemove,
+                ButtonEqual
+            )
+        } else {
+            listOf(
+                // First row
+                Button7,
+                Button8,
+                Button9,
+                ButtonDivide,
+                ButtonClear,
+                // Second row
+                Button4,
+                Button5,
+                Button6,
+                ButtonMultiply,
+                ButtonParentheses,
+                // Third row
+                Button1,
+                Button2,
+                Button3,
+                ButtonMinus,
+                ButtonPercent,
+                // Fourth row
+                Button0,
+                ButtonDot,
+                ButtonRemove,
+                ButtonPlus,
+                ButtonEqual
+            )
+        }
 
         fun getAllSecondaryButtons(
             angleType: model.AngleType,

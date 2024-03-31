@@ -31,6 +31,7 @@ kotlin {
             implementation(libs.koin.compose)
 
             implementation(libs.constraintlayout.compose.multiplatform)
+            implementation(libs.material3.windowSizeClass.multiplatform)
 
             implementation(libs.kmp.viewmodel.koin.compose)
         }

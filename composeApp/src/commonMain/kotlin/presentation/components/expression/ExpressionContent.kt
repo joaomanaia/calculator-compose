@@ -39,6 +39,7 @@ fun ExpressionContent(
     currentExpression: TextFieldValue,
     result: String,
     angleType: AngleType,
+    shape: RoundedCornerShape = RoundedCornerShape(20.dp),
     updateTextFieldValue: (value: TextFieldValue) -> Unit
 ) {
     val spaceMedium = MaterialTheme.spacing.medium
@@ -53,7 +54,7 @@ fun ExpressionContent(
     Surface(
         tonalElevation = 8.dp,
         modifier = modifier,
-        shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
+        shape = shape
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
