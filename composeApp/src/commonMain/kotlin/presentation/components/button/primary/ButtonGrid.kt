@@ -1,6 +1,5 @@
 package presentation.components.button.primary
 
-import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
@@ -39,19 +38,10 @@ private fun ButtonGridImpl(
     onActionClick: (action: ButtonAction) -> Unit
 ) {
     val spaceSmall = MaterialTheme.spacing.small
-    val spaceMedium = MaterialTheme.spacing.medium
 
     val itemsPerCol = remember(isPortrait) {
         if (isPortrait) 5 else 4
     }
-
-    val gridPadding = if (isPortrait) {
-        PaddingValues(
-            start = spaceMedium,
-            end = spaceMedium,
-            bottom = spaceMedium
-        )
-    } else PaddingValues(0.dp)
 
     BoxWithConstraints(
         modifier = modifier
@@ -65,7 +55,6 @@ private fun ButtonGridImpl(
             columns = GridCells.Fixed(count = if (isPortrait) 4 else 5),
             verticalArrangement = Arrangement.spacedBy(spaceSmall),
             horizontalArrangement = Arrangement.spacedBy(spaceSmall),
-            contentPadding = gridPadding,
             userScrollEnabled = false
         ) {
             items(items = actions) { action ->

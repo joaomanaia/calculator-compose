@@ -8,7 +8,6 @@ import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowDropDown
 import androidx.compose.material3.*
@@ -16,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import core.ButtonAction
@@ -92,10 +90,8 @@ private fun VerticalItemsGrid(
     onActionClick: (action: ButtonAction) -> Unit,
     onMoreActionsClick: () -> Unit
 ) {
-    val spaceSmall = MaterialTheme.spacing.small
-
     Column(modifier = modifier) {
-        HorizontalFixedItems(
+        VerticalFixedItems(
             modifier = Modifier.fillMaxWidth(),
             actions = topFixedActions,
             buttonGridExpanded = buttonGridExpanded,
@@ -105,20 +101,48 @@ private fun VerticalItemsGrid(
 
         AnimatedVisibility(visible = buttonGridExpanded) {
             LazyVerticalGrid(
-                modifier = Modifier.fillMaxWidth(1f),
+                modifier = Modifier.fillMaxWidth(1f).padding(end = VERTICAL_GRID_RIGHT_PADDING),
                 columns = GridCells.Fixed(count = 4),
-                verticalArrangement = Arrangement.spacedBy(spaceSmall),
-                horizontalArrangement = Arrangement.spacedBy(spaceSmall),
             ) {
                 items(items = gridActions) { action ->
                     SecondaryButtonComponent(
                         buttonAction = action,
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().height(VERTICAL_ITEM_HEIGHT),
                         onClick = { onActionClick(action) }
                     )
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun VerticalFixedItems(
+    modifier: Modifier = Modifier,
+    actions: List<ButtonAction>,
+    buttonGridExpanded: Boolean,
+    onActionClick: (action: ButtonAction) -> Unit,
+    onMoreActionsClick: () -> Unit
+) {
+    check(actions.size == 4) { "TopFixedItems requires exactly 4 actions" }
+
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = modifier
+    ) {
+        actions.forEach { action ->
+            SecondaryButtonComponent(
+                buttonAction = action,
+                modifier = Modifier.weight(1f).height(VERTICAL_ITEM_HEIGHT),
+                onClick = { onActionClick(action) }
+            )
+        }
+
+        MoreSecondaryActionsItem(
+            buttonGridExpanded = buttonGridExpanded,
+            verticalContent = false,
+            onClick = onMoreActionsClick
+        )
     }
 }
 
@@ -135,14 +159,15 @@ private fun HorizontalItemsGrid(
 
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
     ) {
         Surface(
-            modifier = Modifier.fillMaxHeight().width(64.dp),
+            modifier = Modifier.fillMaxHeight().width(HORIZONTAL_ITEM_WIDTH),
             shape = MaterialTheme.shapes.extraLarge,
             tonalElevation = 4.dp
         ) {
-            VerticalFixedItems(
+            HorizontalFixedItems(
                 modifier = Modifier.fillMaxHeight(),
                 actions = topFixedActions,
                 buttonGridExpanded = buttonGridExpanded,
@@ -153,17 +178,15 @@ private fun HorizontalItemsGrid(
 
         AnimatedVisibility(visible = buttonGridExpanded) {
             LazyHorizontalGrid(
-                modifier = Modifier.fillMaxHeight(1f),
-                rows = GridCells.Fixed(count = 3),
+                modifier = Modifier.fillMaxHeight(),
+                rows = GridCells.Fixed(count = 4),
                 verticalArrangement = Arrangement.spacedBy(spaceSmall),
                 horizontalArrangement = Arrangement.spacedBy(spaceSmall),
             ) {
                 items(items = gridActions) { action ->
                     SecondaryButtonComponent(
                         buttonAction = action,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .aspectRatio(1f),
+                        modifier = Modifier.fillMaxHeight().width(HORIZONTAL_ITEM_WIDTH),
                         onClick = { onActionClick(action) }
                     )
                 }
@@ -182,42 +205,6 @@ private fun HorizontalFixedItems(
 ) {
     check(actions.size == 4) { "TopFixedItems requires exactly 4 actions" }
 
-    val spaceSmall = MaterialTheme.spacing.small
-
-    Row(
-        verticalAlignment = Alignment.Top,
-        modifier = modifier
-    ) {
-        actions.forEach { action ->
-            SecondaryButtonComponent(
-                buttonAction = action,
-                modifier = Modifier.weight(1f),
-                onClick = { onActionClick(action) }
-            )
-        }
-
-        MoreSecondaryActionsItem(
-            modifier = Modifier.padding(
-                start = spaceSmall,
-                top = spaceSmall
-            ),
-            buttonGridExpanded = buttonGridExpanded,
-            verticalContent = false,
-            onClick = onMoreActionsClick
-        )
-    }
-}
-
-@Composable
-private fun VerticalFixedItems(
-    modifier: Modifier = Modifier,
-    actions: List<ButtonAction>,
-    buttonGridExpanded: Boolean,
-    onActionClick: (action: ButtonAction) -> Unit,
-    onMoreActionsClick: () -> Unit
-) {
-    check(actions.size == 4) { "TopFixedItems requires exactly 4 actions" }
-
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = modifier
@@ -225,7 +212,7 @@ private fun VerticalFixedItems(
         actions.forEach { action ->
             SecondaryButtonComponent(
                 buttonAction = action,
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.weight(1f).fillMaxWidth(),
                 onClick = { onActionClick(action) }
             )
         }
@@ -274,6 +261,14 @@ internal fun MoreSecondaryActionsItem(
         )
     }
 }
+
+private val VERTICAL_ITEM_HEIGHT = 48.dp
+
+/**
+ * Padding for the right side of the vertical grid to align with the top fixed items
+ */
+private val VERTICAL_GRID_RIGHT_PADDING = 48.dp
+private val HORIZONTAL_ITEM_WIDTH = 64.dp
 
 private const val VERTICAL_NORMAL_ROTATION = 270f
 private const val VERTICAL_EXPANDED_ROTATION = 90f

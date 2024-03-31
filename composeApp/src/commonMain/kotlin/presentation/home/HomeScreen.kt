@@ -71,6 +71,9 @@ private fun HomePortraitContent(
     result: String,
     onEvent: (event: HomeUiEvent) -> Unit
 ) {
+    val spaceSmall = MaterialTheme.spacing.small
+    val spaceMedium = MaterialTheme.spacing.medium
+
     ConstraintLayout(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -81,7 +84,7 @@ private fun HomePortraitContent(
                 start.linkTo(parent.start)
                 end.linkTo(parent.end)
                 top.linkTo(parent.top)
-                bottom.linkTo(buttonsGrid.top)
+                bottom.linkTo(buttonsGrid.top, spaceSmall)
 
                 height = Dimension.fillToConstraints
             },
@@ -97,9 +100,9 @@ private fun HomePortraitContent(
 
         Column(
             modifier = Modifier.constrainAs(buttonsGrid) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom)
+                start.linkTo(parent.start, spaceMedium)
+                end.linkTo(parent.end, spaceMedium)
+                bottom.linkTo(parent.bottom, spaceMedium)
 
                 height = Dimension.fillToConstraints
             }

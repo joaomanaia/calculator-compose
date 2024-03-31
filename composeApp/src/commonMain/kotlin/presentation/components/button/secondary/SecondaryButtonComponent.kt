@@ -10,6 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.style.TextAlign
 import core.ButtonAction
 import core.ButtonAction.Companion.getColorByButton
@@ -18,28 +19,31 @@ import core.ButtonAction.Companion.getColorByButton
 fun SecondaryButtonComponent(
     modifier: Modifier = Modifier,
     buttonAction: ButtonAction,
+    shape: Shape = CircleShape,
     onClick: () -> Unit
 ) {
     val color = buttonAction.getColorByButton()
 
-    SecondaryButtonComponentImpl(
+    SecondaryButtonComponent(
         modifier = modifier,
         actionText = buttonAction.displayText,
         color = color,
+        shape = shape,
         onClick = onClick
     )
 }
 
 @Composable
-private fun SecondaryButtonComponentImpl(
+private fun SecondaryButtonComponent(
     modifier: Modifier = Modifier,
     actionText: String,
     color: Color,
+    shape: Shape = CircleShape,
     onClick: () -> Unit
 ) {
     Surface(
-        modifier = modifier.aspectRatio(BUTTON_RATIO),
-        shape = CircleShape,
+        modifier = modifier,
+        shape = shape,
         color = color,
         onClick = onClick
     ) {
@@ -54,5 +58,3 @@ private fun SecondaryButtonComponentImpl(
         }
     }
 }
-
-private const val BUTTON_RATIO = 1f / 0.8f

@@ -53,7 +53,8 @@ private fun MoreSecondaryActionsItemPreview() {
         Surface {
             MoreSecondaryActionsItem(
                 onClick = { buttonGridExpanded = !buttonGridExpanded },
-                buttonGridExpanded = buttonGridExpanded
+                buttonGridExpanded = buttonGridExpanded,
+                verticalContent = true
             )
         }
     }
