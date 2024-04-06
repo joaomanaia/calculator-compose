@@ -35,7 +35,6 @@ import model.AngleType
 @Composable
 fun ExpressionContent(
     modifier: Modifier = Modifier,
-    isPortrait: Boolean,
     currentExpression: TextFieldValue,
     result: String,
     angleType: AngleType,

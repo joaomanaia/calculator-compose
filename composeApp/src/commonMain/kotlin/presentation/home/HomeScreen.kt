@@ -1,6 +1,5 @@
 package presentation.home
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,15 +11,13 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.constraintlayout.compose.ConstraintLayout
-import androidx.constraintlayout.compose.Dimension
+import androidx.constraintlayout.compose.*
 import com.hoc081098.kmp.viewmodel.koin.compose.koinKmpViewModel
-import presentation.components.button.primary.ButtonGrid
 import presentation.components.button.secondary.SecondaryButtonGrid
 import presentation.components.expression.ExpressionContent
 import core.presentation.theme.spacing
+import presentation.components.button.primary.ButtonGrid
 
 @Composable
 internal fun HomeScreen(
@@ -45,92 +42,18 @@ fun HomeScreenImpl(
     windowSizeClass: WindowSizeClass,
     onEvent: (event: HomeUiEvent) -> Unit
 ) {
-    val showVerticalContent = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
-
     Surface {
-        if (showVerticalContent) {
-            HomePortraitContent(
-                uiState = uiState,
-                result = result,
-                onEvent = onEvent
-            )
-        } else {
-            HomeLandscapeContent(
-                uiState = uiState,
-                result = result,
-                windowSizeClass = windowSizeClass,
-                onEvent = onEvent
-            )
-        }
-    }
-}
-
-@Composable
-private fun HomePortraitContent(
-    uiState: HomeUiState,
-    result: String,
-    onEvent: (event: HomeUiEvent) -> Unit
-) {
-    val spaceSmall = MaterialTheme.spacing.small
-    val spaceMedium = MaterialTheme.spacing.medium
-
-    ConstraintLayout(
-        modifier = Modifier.fillMaxSize()
-    ) {
-        val (expressionContent, buttonsGrid) = createRefs()
-
-        ExpressionContent(
-            modifier = Modifier.constrainAs(expressionContent) {
-                start.linkTo(parent.start)
-                end.linkTo(parent.end)
-                top.linkTo(parent.top)
-                bottom.linkTo(buttonsGrid.top, spaceSmall)
-
-                height = Dimension.fillToConstraints
-            },
-            isPortrait = true,
-            currentExpression = uiState.currentExpression,
+        HomeContent(
+            uiState = uiState,
             result = result,
-            angleType = uiState.angleType,
-            shape = RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp),
-            updateTextFieldValue = { value ->
-                onEvent(HomeUiEvent.UpdateTextFieldValue(value))
-            }
+            windowSizeClass = windowSizeClass,
+            onEvent = onEvent
         )
-
-        Column(
-            modifier = Modifier.constrainAs(buttonsGrid) {
-                start.linkTo(parent.start, spaceMedium)
-                end.linkTo(parent.end, spaceMedium)
-                bottom.linkTo(parent.bottom, spaceMedium)
-
-                height = Dimension.fillToConstraints
-            }
-        ) {
-            SecondaryButtonGrid(
-                modifier = Modifier.fillMaxWidth(),
-                isPortrait = true,
-                buttonGridExpanded = uiState.moreActionsExpanded,
-                angleType = uiState.angleType,
-                isInverse = uiState.isInverse,
-                onActionClick = { action ->
-                    onEvent(HomeUiEvent.OnButtonActionClick(action))
-                },
-                onMoreActionsClick = { onEvent(HomeUiEvent.OnChangeMoreActionsClick) }
-            )
-            ButtonGrid(
-                modifier = Modifier.fillMaxWidth(),
-                isPortrait = true,
-                onActionClick = { action ->
-                    onEvent(HomeUiEvent.OnButtonActionClick(action))
-                },
-            )
-        }
     }
 }
 
 @Composable
-private fun HomeLandscapeContent(
+private fun HomeContent(
     uiState: HomeUiState,
     result: String,
     windowSizeClass: WindowSizeClass,
@@ -138,78 +61,106 @@ private fun HomeLandscapeContent(
 ) {
     val spaceMedium = MaterialTheme.spacing.medium
 
-    val historyComponentWidth = if (windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded) {
-        300.dp
-    } else {
-        200.dp
-    }
+    val showLeftExpressionHistory = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Expanded
+    val verticalContent = windowSizeClass.widthSizeClass == WindowWidthSizeClass.Compact
 
     ConstraintLayout(
-        modifier = Modifier.fillMaxSize().padding(spaceMedium)
+        modifier = Modifier.fillMaxSize()
     ) {
-        val (expressionContent, buttonsGrid, historyComponent) = createRefs()
+        val (expressionContent, primaryButtons, secondaryButtons, historyComponent) = createRefs()
 
-        HistoryComponent(
-            modifier = Modifier.constrainAs(historyComponent) {
-                start.linkTo(parent.start)
-                top.linkTo(parent.top)
-                bottom.linkTo(parent.bottom)
+        if (showLeftExpressionHistory) {
+            HistoryComponent(
+                modifier = Modifier.constrainAs(historyComponent) {
+                    start.linkTo(parent.start, spaceMedium)
+                    top.linkTo(parent.top, spaceMedium)
+                    bottom.linkTo(parent.bottom, spaceMedium)
 
-                height = Dimension.fillToConstraints
-                width = Dimension.value(historyComponentWidth)
-            }
-        )
+                    height = Dimension.fillToConstraints
+                    width = Dimension.value(300.dp)
+                }
+            )
+        }
 
         ExpressionContent(
             modifier = Modifier.constrainAs(expressionContent) {
-                start.linkTo(historyComponent.end, spaceMedium)
-                end.linkTo(parent.end)
-                top.linkTo(parent.top)
-                bottom.linkTo(buttonsGrid.top)
+                if (showLeftExpressionHistory) {
+                    start.linkTo(historyComponent.end, spaceMedium)
+                } else {
+                    start.linkTo(parent.start, if (verticalContent) 0.dp else spaceMedium)
+                }
+
+                end.linkTo(parent.end, if (verticalContent) 0.dp else spaceMedium)
+                top.linkTo(parent.top, if (verticalContent) 0.dp else spaceMedium)
+                bottom.linkTo(secondaryButtons.top, spaceMedium)
 
                 width = Dimension.fillToConstraints
                 height = Dimension.fillToConstraints
             },
-            isPortrait = false,
             currentExpression = uiState.currentExpression,
             result = result,
             angleType = uiState.angleType,
             updateTextFieldValue = { value ->
                 onEvent(HomeUiEvent.UpdateTextFieldValue(value))
-            }
+            },
+            shape = if (verticalContent) RoundedCornerShape(
+                bottomStart = 20.dp,
+                bottomEnd = 20.dp
+            ) else RoundedCornerShape(20.dp),
         )
 
-        Row(
-            modifier = Modifier.constrainAs(buttonsGrid) {
-                start.linkTo(historyComponent.end, spaceMedium)
-                end.linkTo(parent.end)
-                bottom.linkTo(parent.bottom)
-                top.linkTo(expressionContent.bottom, spaceMedium)
+        ButtonGrid(
+            modifier = Modifier.constrainAs(primaryButtons) {
+                if (verticalContent) {
+                    top.linkTo(secondaryButtons.bottom)
+                    start.linkTo(parent.start, spaceMedium)
+                } else {
+                    top.linkTo(expressionContent.bottom, spaceMedium)
+                    start.linkTo(secondaryButtons.end, spaceMedium)
+                }
+
+                end.linkTo(parent.end, spaceMedium)
+                bottom.linkTo(parent.bottom, spaceMedium)
 
                 width = Dimension.fillToConstraints
                 height = Dimension.fillToConstraints
             },
-            horizontalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium)
-        ) {
-            SecondaryButtonGrid(
-                modifier = Modifier.fillMaxHeight(),
-                isPortrait = false,
-                buttonGridExpanded = uiState.moreActionsExpanded,
-                angleType = uiState.angleType,
-                isInverse = uiState.isInverse,
-                onActionClick = { action ->
-                    onEvent(HomeUiEvent.OnButtonActionClick(action))
-                },
-                onMoreActionsClick = { onEvent(HomeUiEvent.OnChangeMoreActionsClick) }
-            )
-            ButtonGrid(
-                modifier = Modifier.fillMaxHeight(),
-                isPortrait = false,
-                onActionClick = { action ->
-                    onEvent(HomeUiEvent.OnButtonActionClick(action))
-                },
-            )
-        }
+            isPortrait = verticalContent,
+            onActionClick = { action ->
+                onEvent(HomeUiEvent.OnButtonActionClick(action))
+            },
+        )
+
+        SecondaryButtonGrid(
+            modifier = Modifier.constrainAs(secondaryButtons) {
+                if (showLeftExpressionHistory && !verticalContent) {
+                    start.linkTo(historyComponent.end, spaceMedium)
+                } else {
+                    start.linkTo(parent.start, spaceMedium)
+                }
+
+                top.linkTo(expressionContent.bottom)
+
+                if (verticalContent) {
+                    end.linkTo(parent.end, spaceMedium)
+                    bottom.linkTo(primaryButtons.top, spaceMedium)
+                    width = Dimension.fillToConstraints
+                    height = Dimension.wrapContent
+                } else {
+                    bottom.linkTo(parent.bottom, spaceMedium)
+                    width = Dimension.wrapContent
+                    height = Dimension.fillToConstraints
+                }
+            },
+            isPortrait = verticalContent,
+            buttonGridExpanded = uiState.moreActionsExpanded,
+            angleType = uiState.angleType,
+            isInverse = uiState.isInverse,
+            onActionClick = { action ->
+                onEvent(HomeUiEvent.OnButtonActionClick(action))
+            },
+            onMoreActionsClick = { onEvent(HomeUiEvent.OnChangeMoreActionsClick) }
+        )
     }
 }
 

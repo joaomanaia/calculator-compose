@@ -18,9 +18,7 @@ fun App() {
             modules(evaluatorModule)
         }
     ) {
-        CalculatorTheme(
-            darkTheme = false
-        ) {
+        CalculatorTheme {
             Surface(
                 modifier = Modifier.fillMaxSize(),
                 color = MaterialTheme.colorScheme.background

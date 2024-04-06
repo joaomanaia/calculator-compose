@@ -1,13 +1,11 @@
 package presentation.components.button.primary
 
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import core.ButtonAction
@@ -39,36 +37,26 @@ private fun ButtonGridImpl(
 ) {
     val spaceSmall = MaterialTheme.spacing.small
 
-    val itemsPerCol = remember(isPortrait) {
-        if (isPortrait) 5 else 4
+    val actionsChunked = remember(actions, isPortrait) {
+        val itemsPerCol = if (isPortrait) 4 else 5
+
+        actions.chunked(itemsPerCol)
     }
 
-    BoxWithConstraints(
-        modifier = modifier
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(spaceSmall),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        val heightPerItem = remember(maxHeight, itemsPerCol) {
-            maxHeight / itemsPerCol - 8.dp
-        }
-
-        LazyVerticalGrid(
-            modifier = Modifier.fillMaxWidth(),
-            columns = GridCells.Fixed(count = if (isPortrait) 4 else 5),
-            verticalArrangement = Arrangement.spacedBy(spaceSmall),
-            horizontalArrangement = Arrangement.spacedBy(spaceSmall),
-            userScrollEnabled = false
-        ) {
-            items(items = actions) { action ->
-                BoxWithConstraints(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    // Ensure that the item height is not greater than the max width,
-                    // to make sure that the item is square and not too tall.
-                    val itemHeight = minOf(maxWidth, heightPerItem)
-
+        actionsChunked.forEach { rowActions ->
+            Row(
+                modifier = Modifier.fillMaxWidth().weight(1f),
+                horizontalArrangement = Arrangement.spacedBy(spaceSmall),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                rowActions.forEach { action ->
                     ButtonComponent(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(itemHeight),
+                        modifier = Modifier.weight(1f),
                         buttonAction = action,
                         onClick = { onActionClick(action) }
                     )
