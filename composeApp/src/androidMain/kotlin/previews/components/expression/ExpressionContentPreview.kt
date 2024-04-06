@@ -25,7 +25,6 @@ private fun ExpressionContentPreview() {
                     .padding(MaterialTheme.spacing.medium)
                     .fillMaxWidth()
                     .height(300.dp),
-                isPortrait = true,
                 currentExpression = TextFieldValue("21+3*"),
                 result = "23",
                 angleType = AngleType.DEG,
