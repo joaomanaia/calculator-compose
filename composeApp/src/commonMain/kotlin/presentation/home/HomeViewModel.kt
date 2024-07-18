@@ -14,14 +14,16 @@ import kotlinx.coroutines.launch
 
 class HomeViewModel (
     private val expressionUtil: ExpressionUtil,
-    private val expressionResultDataSource: ExpressionResultDataSource
+//    private val expressionResultDataSource: ExpressionResultDataSource
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState = combine(
         _uiState.asStateFlow(),
-        expressionResultDataSource.getAllResultsFlow(),
+        emptyFlow<Any>()
+//        expressionResultDataSource.getAllResultsFlow(),
     ) { uiState, results ->
-        uiState.copy(results = results)
+//        uiState.copy(results = results)
+        uiState
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.WhileSubscribed(),
@@ -107,15 +109,15 @@ class HomeViewModel (
             val result = expressionUtil.calculateExpression(currentState.currentExpression.text)
 
             // Save the result in the database
-            viewModelScope.launch {
-                expressionResultDataSource.insertResult(
-                    result = ExpressionResult(
-                        expression = currentState.currentExpression.text,
-                        result = result,
-                        createdAt = DateTimeUtil.now()
-                    )
-                )
-            }
+//            viewModelScope.launch {
+//                expressionResultDataSource.insertResult(
+//                    result = ExpressionResult(
+//                        expression = currentState.currentExpression.text,
+//                        result = result,
+//                        createdAt = DateTimeUtil.now()
+//                    )
+//                )
+//            }
 
             currentState.copy(
                 currentExpression = TextFieldValue(

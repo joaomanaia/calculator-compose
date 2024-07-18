@@ -1,23 +1,27 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
-    kotlin("multiplatform")
+    alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrainsCompose)
+    alias(libs.plugins.compose.compiler)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.hilt)
 }
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = "11"
-            }
+        @OptIn(ExperimentalKotlinGradlePluginApi::class)
+        compilerOptions {
+            jvmTarget.set(JvmTarget.JVM_17)
+            freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
         }
     }
 
     jvm("desktop")
+
+    jvmToolchain(17)
 
     sourceSets {
         commonMain.dependencies {
@@ -55,9 +59,6 @@ kotlin {
         }
 
         androidMain.dependencies {
-            implementation(libs.hilt.android)
-            implementation(libs.hilt.navigationCompose)
-
             implementation(libs.koin.android)
 
             implementation(libs.kotlinx.coroutines.android)
@@ -66,10 +67,6 @@ kotlin {
             implementation(libs.androidx.activity.compose)
         }
     }
-}
-
-dependencies {
-    add("kspAndroid", libs.hilt.compiler)
 }
 
 tasks.withType<Test> {
@@ -88,8 +85,8 @@ android {
         applicationId = "me.joaomanaia.calculator.compose"
         minSdk = libs.versions.android.minSdk.get().toInt()
         targetSdk = libs.versions.android.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = libs.versions.app.version.code.get().toInt()
+        versionName = libs.versions.app.version.name.get()
     }
     packaging {
         resources {
@@ -101,13 +98,16 @@ android {
             isMinifyEnabled = false
         }
     }
+    buildFeatures {
+        compose = true
+    }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
     dependencies {
-        debugImplementation(libs.androidx.compose.ui.tooling)
-        debugImplementation(libs.androidx.compose.ui.tooling.preview)
+        debugImplementation(compose.uiTooling)
+        debugImplementation(compose.preview)
     }
 }
 
@@ -118,7 +118,7 @@ compose.desktop {
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
             packageName = "Calculator"
-            packageVersion = "1.0.0"
+            packageVersion = libs.versions.app.version.name.get()
         }
     }
 }
