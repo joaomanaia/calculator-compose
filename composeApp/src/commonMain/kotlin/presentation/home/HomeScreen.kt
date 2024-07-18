@@ -10,22 +10,22 @@ import androidx.compose.material3.*
 import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.*
-import com.hoc081098.kmp.viewmodel.koin.compose.koinKmpViewModel
 import presentation.components.button.secondary.SecondaryButtonGrid
 import presentation.components.expression.ExpressionContent
 import core.presentation.theme.spacing
-import domain.result.ExpressionResult
+import org.koin.compose.viewmodel.koinViewModel
+import org.koin.core.annotation.KoinExperimentalAPI
 import presentation.components.button.primary.ButtonGrid
 import presentation.home.components.HistoryList
 
 @Composable
+@OptIn(KoinExperimentalAPI::class)
 internal fun HomeScreen(
     windowSizeClass: WindowSizeClass,
-    homeViewModel: HomeViewModel = koinKmpViewModel()
+    homeViewModel: HomeViewModel = koinViewModel()
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
     val result by homeViewModel.result.collectAsState()

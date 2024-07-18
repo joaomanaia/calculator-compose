@@ -30,32 +30,37 @@ kotlin {
             implementation(compose.material3)
             implementation(compose.ui)
 
-            implementation(project.dependencies.platform(libs.koin.bom))
-            implementation(libs.koin.core)
+            api(project.dependencies.platform(libs.koin.bom))
+            api(libs.koin.core)
             implementation(libs.koin.compose)
+            implementation(libs.koin.compose.viewmodel)
 
             implementation(libs.constraintlayout.compose.multiplatform)
             implementation(libs.material3.windowSizeClass.multiplatform)
 
-            implementation(libs.kmp.viewmodel.koin.compose)
+            implementation(libs.slf4j.api)
+            implementation(libs.slf4j.simple)
+            implementation(libs.kotlinLogging)
 
             implementation(libs.kotlinx.datetime)
         }
 
         commonTest.dependencies {
-            implementation(compose.ui)
-
-            implementation(kotlin("test-junit5"))
+            implementation(kotlin("test"))
+            implementation(kotlin("test-annotations-common"))
             implementation(libs.assertk)
-            implementation(libs.junit.jupiter.params)
+
+            implementation(libs.kotlinx.coroutines.test)
         }
 
-        val desktopMain by getting
+        val desktopMain by getting {
+            dependencies {
+                implementation(compose.desktop.currentOs)
 
-        desktopMain.dependencies {
-            implementation(compose.desktop.currentOs)
+                implementation(libs.koin.logger.slf4j)
 
-            implementation(libs.kotlinx.coroutines.swing)
+                implementation(libs.kotlinx.coroutines.swing)
+            }
         }
 
         androidMain.dependencies {
@@ -63,14 +68,9 @@ kotlin {
 
             implementation(libs.kotlinx.coroutines.android)
 
-            implementation(project.dependencies.enforcedPlatform(libs.androidx.compose.bom))
             implementation(libs.androidx.activity.compose)
         }
     }
-}
-
-tasks.withType<Test> {
-    useJUnitPlatform()
 }
 
 android {

@@ -1,7 +1,17 @@
 package me.joaomanaia.calculator.compose
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
+import di.KoinStarter
+import org.koin.android.ext.koin.androidContext
+import org.koin.android.ext.koin.androidLogger
 
-@HiltAndroidApp
-class CalculatorApp : Application()
+class CalculatorApp : Application() {
+    override fun onCreate() {
+        super.onCreate()
+
+        KoinStarter.init {
+            androidLogger()
+            androidContext(this@CalculatorApp)
+        }
+    }
+}

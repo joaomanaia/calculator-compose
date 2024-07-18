@@ -2,7 +2,8 @@ package presentation.home
 
 import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.TextFieldValue
-import com.hoc081098.kmp.viewmodel.ViewModel
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import core.util.ExpressionUtil
 import core.ButtonAction
 import core.ButtonAction.*
