@@ -12,5 +12,9 @@ sealed interface HomeUiEvent {
         val value: TextFieldValue
     ) : HomeUiEvent
 
+    data class InsertIntoExpression(
+        val value: String
+    ) : HomeUiEvent
+
     data object OnChangeMoreActionsClick : HomeUiEvent
 }

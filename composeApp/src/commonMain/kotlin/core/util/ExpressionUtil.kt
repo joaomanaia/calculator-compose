@@ -15,5 +15,10 @@ interface ExpressionUtil {
         currentExpression: TextFieldValue
     ): TextFieldValue
 
+    fun addValueToExpression(
+        value: String,
+        currentExpression: TextFieldValue
+    ): TextFieldValue
+
     fun changeAngleMode(newMode: model.AngleType)
 }

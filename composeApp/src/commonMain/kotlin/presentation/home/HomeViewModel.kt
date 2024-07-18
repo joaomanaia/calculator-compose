@@ -6,19 +6,27 @@ import com.hoc081098.kmp.viewmodel.ViewModel
 import core.util.ExpressionUtil
 import core.ButtonAction
 import core.ButtonAction.*
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
+import domain.result.ExpressionResult
+import domain.result.ExpressionResultDataSource
+import domain.time.DateTimeUtil
+import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 class HomeViewModel (
-    private val expressionUtil: ExpressionUtil
+    private val expressionUtil: ExpressionUtil,
+    private val expressionResultDataSource: ExpressionResultDataSource
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
-    val uiState = _uiState.asStateFlow()
+    val uiState = combine(
+        _uiState.asStateFlow(),
+        expressionResultDataSource.getAllResultsFlow(),
+    ) { uiState, results ->
+        uiState.copy(results = results)
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(),
+        initialValue = HomeUiState()
+    )
 
     val result = _uiState
         .distinctUntilChanged { old, new ->
@@ -35,6 +43,7 @@ class HomeViewModel (
         when (event) {
             is HomeUiEvent.OnButtonActionClick -> processAction(event.action)
             is HomeUiEvent.UpdateTextFieldValue -> updateTextFieldValue(event.value)
+            is HomeUiEvent.InsertIntoExpression -> addValueToExpression(event.value)
             is HomeUiEvent.OnChangeMoreActionsClick -> changeMoreActionsState()
         }
     }
@@ -66,6 +75,15 @@ class HomeViewModel (
         }
     }
 
+    private fun addValueToExpression(value: String) {
+        _uiState.update { currentState ->
+            val currentExpression = currentState.currentExpression
+            val newExpression = expressionUtil.addValueToExpression(value, currentExpression)
+
+            currentState.copy(currentExpression = newExpression)
+        }
+    }
+
     private fun addActionValueToExpression(action: ButtonAction) {
         _uiState.update { currentState ->
             val currentExpression = currentState.currentExpression
@@ -85,8 +103,19 @@ class HomeViewModel (
      * Replace the current expression with the result and set the cursor at the end of the expression
      */
     private fun replaceResultInExpression() {
-        _uiState.update { currentState ->
+        _uiState.updateAndGet { currentState ->
             val result = expressionUtil.calculateExpression(currentState.currentExpression.text)
+
+            // Save the result in the database
+            viewModelScope.launch {
+                expressionResultDataSource.insertResult(
+                    result = ExpressionResult(
+                        expression = currentState.currentExpression.text,
+                        result = result,
+                        createdAt = DateTimeUtil.now()
+                    )
+                )
+            }
 
             currentState.copy(
                 currentExpression = TextFieldValue(

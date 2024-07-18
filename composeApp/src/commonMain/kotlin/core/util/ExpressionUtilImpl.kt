@@ -108,6 +108,15 @@ internal class ExpressionUtilImpl(
         )
     }
 
+    override fun addValueToExpression(value: String, currentExpression: TextFieldValue): TextFieldValue {
+        val positionToAdd = currentExpression.selection.start
+
+        return currentExpression.copy(
+            text = addItemToExpression(value, currentExpression),
+            selection = TextRange(positionToAdd + value.length)
+        )
+    }
+
     override fun addActionValueToExpression(
         action: ButtonAction,
         currentExpression: TextFieldValue

@@ -6,13 +6,14 @@ android-targetSdk = "34"
 assertk = "0.28.0"
 androidxCoreKtx = "1.12.0"
 androidxActivity = "1.8.2"
-androidGradlePlugin = "8.3.1"
+androidGradlePlugin = "8.5.1"
 androidxComposeCompiler = "1.5.10"
 androidxComposeBom = "2024.02.01"
 constraintlayoutCompose = "1.0.1"
 kmpViewmodelKoinCompose = "0.7.1"
 kotlin = "1.9.22"
 kotlinxCoroutines = "1.8.0"
+kotlinxDatetime = "0.6.0"
 ksp = "1.9.22-1.0.18"
 hilt = "2.51"
 hiltExt = "1.2.0"
@@ -51,10 +52,12 @@ kotlinx-coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-cor
 kotlinx-coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android", version.ref = "kotlinxCoroutines" }
 kotlinx-coroutines-swing = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-swing", version.ref = "kotlinxCoroutines" }
 koin-bom = { module = "io.insert-koin:koin-bom", version.ref = "koin-bom" }
+koin-android = { module = "io.insert-koin:koin-android" }
 koin-core = { module = "io.insert-koin:koin-core" }
 koin-compose = { module = "io.insert-koin:koin-compose" }
 google-material = { group = "com.google.android.material", name = "material", version.ref = "googleMaterial" }
 junit-jupiter-params = { group = "org.junit.jupiter", name = "junit-jupiter-params", version.ref = "junitJupiter" }
+kotlinx-datetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 material3-windowSizeClass-multiplatform = { module = "dev.chrisbanes.material3:material3-window-size-class-multiplatform", version.ref = "material3WindowSizeClassMultiplatform" }
 
 [plugins]

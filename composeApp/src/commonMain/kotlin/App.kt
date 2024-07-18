@@ -6,29 +6,21 @@ import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import core.presentation.theme.CalculatorTheme
-import di.evaluatorModule
-import org.koin.compose.KoinApplication
 import presentation.home.HomeScreen
 
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 fun App() {
-    KoinApplication(
-        application = {
-            modules(evaluatorModule)
-        }
-    ) {
-        CalculatorTheme {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = MaterialTheme.colorScheme.background
-            ) {
-                val windowSizeClass = calculateWindowSizeClass()
+    CalculatorTheme {
+        Surface(
+            modifier = Modifier.fillMaxSize(),
+            color = MaterialTheme.colorScheme.background
+        ) {
+            val windowSizeClass = calculateWindowSizeClass()
 
-                HomeScreen(
-                    windowSizeClass = windowSizeClass
-                )
-            }
+            HomeScreen(
+                windowSizeClass = windowSizeClass
+            )
         }
     }
 }

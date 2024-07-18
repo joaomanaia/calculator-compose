@@ -34,6 +34,8 @@ kotlin {
             implementation(libs.material3.windowSizeClass.multiplatform)
 
             implementation(libs.kmp.viewmodel.koin.compose)
+
+            implementation(libs.kotlinx.datetime)
         }
 
         commonTest.dependencies {
@@ -55,6 +57,8 @@ kotlin {
         androidMain.dependencies {
             implementation(libs.hilt.android)
             implementation(libs.hilt.navigationCompose)
+
+            implementation(libs.koin.android)
 
             implementation(libs.kotlinx.coroutines.android)
 

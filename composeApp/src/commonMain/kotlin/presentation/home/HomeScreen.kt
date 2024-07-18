@@ -2,6 +2,7 @@ package presentation.home
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MoreVert
@@ -17,7 +18,9 @@ import com.hoc081098.kmp.viewmodel.koin.compose.koinKmpViewModel
 import presentation.components.button.secondary.SecondaryButtonGrid
 import presentation.components.expression.ExpressionContent
 import core.presentation.theme.spacing
+import domain.result.ExpressionResult
 import presentation.components.button.primary.ButtonGrid
+import presentation.home.components.HistoryList
 
 @Composable
 internal fun HomeScreen(
@@ -70,7 +73,7 @@ private fun HomeContent(
         val (expressionContent, primaryButtons, secondaryButtons, historyComponent) = createRefs()
 
         if (showLeftExpressionHistory) {
-            HistoryComponent(
+            HistoryList(
                 modifier = Modifier.constrainAs(historyComponent) {
                     start.linkTo(parent.start, spaceMedium)
                     top.linkTo(parent.top, spaceMedium)
@@ -78,6 +81,10 @@ private fun HomeContent(
 
                     height = Dimension.fillToConstraints
                     width = Dimension.value(300.dp)
+                },
+                results = uiState.results,
+                insertIntoExpression = { expression ->
+                    onEvent(HomeUiEvent.InsertIntoExpression(expression))
                 }
             )
         }
@@ -161,48 +168,5 @@ private fun HomeContent(
             },
             onMoreActionsClick = { onEvent(HomeUiEvent.OnChangeMoreActionsClick) }
         )
-    }
-}
-
-@Composable
-private fun HistoryComponent(
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        modifier = modifier,
-        tonalElevation = 4.dp,
-        shape = RoundedCornerShape(20.dp)
-    ) {
-        LazyColumn {
-            item {
-                Surface(
-                    tonalElevation = 8.dp
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(
-                                vertical = MaterialTheme.spacing.small,
-                                horizontal = MaterialTheme.spacing.medium
-                            ),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Text(
-                            text = "History",
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        IconButton(
-                            onClick = { /*TODO*/ },
-                        ) {
-                            Icon(
-                                imageVector = Icons.Rounded.MoreVert,
-                                contentDescription = "History more options",
-                            )
-                        }
-                    }
-                }
-            }
-        }
     }
 }
